@@ -54,6 +54,12 @@ export async function middleware(request: NextRequest) {
     if (pathname === '/') {
       return NextResponse.rewrite(new URL(`/s/${subdomain}`, request.url));
     }
+
+    // For the signup path on a subdomain, allow access to the signup page
+    if (pathname === '/signup') {
+      // The signup page will handle the subdomain detection internally
+      return NextResponse.next();
+    }
   }
 
   // On the root domain, allow normal access

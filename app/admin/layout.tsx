@@ -1,17 +1,29 @@
 import { Sidebar } from './sidebar';
 import { getAllTenants } from '@/lib/tenants';
-import { getCurrentUser } from '@/lib/auth-utils';
+import { getCurrentUserWithOnboarding } from '@/lib/auth-utils';
 import { redirect } from 'next/navigation';
+import { AdminHeader } from './admin-header';
+import { canAccessAdmin } from '@/lib/role-utils';
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
+  const user = await getCurrentUserWithOnboarding();
   
   if (!user) {
     redirect('/auth/signin');
+  }
+
+  // Check if user has admin access (owner role)
+  // if (!canAccessAdmin(user)) {
+  //   redirect('/'); // Redirect to home page if not owner
+  // }
+
+  // Redirect to onboarding if user hasn't completed it
+  if (!user.hasCompletedOnboarding) {
+    redirect('/onboarding');
   }
 
   const tenants = await getAllTenants();
@@ -20,28 +32,9 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex h-screen">
-        <Sidebar hasTenants={hasTenants} />
+        <Sidebar hasTenants={hasTenants} tenant={user.tenant} />
         <div className="flex-1 flex flex-col overflow-hidden">
-          <header className="bg-white border-b border-gray-200 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <h2 className="text-xl font-semibold text-gray-900">Dashboard</h2>
-              </div>
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">
-                  Welcome, {user.name || user.email}
-                </span>
-                <form action="/api/auth/signout" method="POST">
-                  <button
-                    type="submit"
-                    className="text-sm text-red-600 hover:text-red-800 transition-colors"
-                  >
-                    Sign out
-                  </button>
-                </form>
-              </div>
-            </div>
-          </header>
+          <AdminHeader user={user} />
           <main className="flex-1 overflow-y-auto">
             {children}
           </main>

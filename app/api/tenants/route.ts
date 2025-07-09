@@ -24,6 +24,8 @@ export async function GET(request: NextRequest) {
         emoji: tenant.emoji,
         description: tenant.description,
         isActive: tenant.isActive,
+        defaultLanguage: (tenant as any).defaultLanguage || 'en',
+        supportedLanguages: (tenant as any).supportedLanguages || ['en'],
       }))
     });
   } catch (error) {

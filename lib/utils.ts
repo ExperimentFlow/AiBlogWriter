@@ -9,3 +9,7 @@ export const rootDomain =
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export function generateWebhookUrl(baseUrl: string = process.env.NEXTAUTH_URL || 'http://localhost:3000', gateway = 'stripe') {
+  return `${baseUrl}/api/${gateway}/webhook`;
+}
