@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
             subdomain: true,
             logoUrl: true,
             favicon: true,
-            primaryColor: true,
-            secondaryColor: true,
+            theme: true,
+            themeConfig: true,
             defaultLanguage: true,
             createdAt: true,
             updatedAt: true,
@@ -45,8 +45,8 @@ export async function GET(request: NextRequest) {
     const userData = {
       id: user.id,
       email: user.email,
-      firstName: user.name?.split(' ')[0] || '',
-      lastName: user.name?.split(' ').slice(1).join(' ') || '',
+      firstName: user.firstName,
+      lastName: user.lastName,
       phone: '', // Not in current schema
       avatar: user.image || '',
       role: user.role as 'admin' | 'user' | 'manager',
@@ -63,8 +63,8 @@ export async function GET(request: NextRequest) {
       logo: user.tenant.logoUrl || '',
       favicon: user.tenant.favicon,
       theme: {
-        primaryColor: user.tenant.primaryColor || '#3b82f6',
-        secondaryColor: user.tenant.secondaryColor || '#64748b',
+        primaryColor: '#3b82f6', // Default color since not in schema
+        secondaryColor: '#64748b', // Default color since not in schema
         backgroundColor: '#ffffff',
         textColor: '#000000',
         colorScheme: 'light' as const,

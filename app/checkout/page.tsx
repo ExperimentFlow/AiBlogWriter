@@ -4,6 +4,7 @@ import React from "react";
 import { CheckoutCore } from "../../components/checkout-builder/CheckoutCore";
 import { defaultCheckoutConfig } from "../../components/checkout-builder/config/defaultConfig";
 import { CheckoutConfiguration } from "../../components/checkout-builder/types";
+import { CheckoutBuilderProvider } from "../../components/checkout-builder/contexts/CheckoutBuilderContext";
 
 // Main Checkout Builder Component
 const CheckoutBuilder = ({ config = defaultCheckoutConfig }: { config?: CheckoutConfiguration }) => {
@@ -26,12 +27,14 @@ const CheckoutBuilder = ({ config = defaultCheckoutConfig }: { config?: Checkout
   };
 
   return (
-    <CheckoutCore 
-      config={config}
+    <CheckoutBuilderProvider
+      initialConfig={config}
       isPreview={false}
       onOrderSubmit={handleOrderSubmit}
       onBackToShop={handleBackToShop}
-    />
+    >
+      <CheckoutCore />
+    </CheckoutBuilderProvider>
   );
 };
 

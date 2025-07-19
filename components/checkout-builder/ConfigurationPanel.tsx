@@ -1,5 +1,12 @@
 import React from 'react';
 import { CheckoutConfiguration } from './types';
+import {
+  updateCheckoutConfig,
+  updateTheme,
+  updateLayout,
+  updateProgressBar,
+  updateAnimation
+} from './utils/configUtils';
 
 interface ConfigurationPanelProps {
   config: CheckoutConfiguration;
@@ -17,27 +24,12 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
     });
   };
 
-  const updateCheckoutConfig = (updates: Partial<CheckoutConfiguration['checkoutConfig']>) => {
-    onConfigChange({
-      ...config,
-      checkoutConfig: {
-        ...config.checkoutConfig,
-        ...updates
-      }
-    });
+  const updateCheckoutConfigLocal = (updates: Partial<CheckoutConfiguration['checkoutConfig']>) => {
+    onConfigChange(updateCheckoutConfig(config, updates));
   };
 
-  const updateTheme = (updates: Partial<CheckoutConfiguration['checkoutConfig']['theme']>) => {
-    onConfigChange({
-      ...config,
-      checkoutConfig: {
-        ...config.checkoutConfig,
-        theme: {
-          ...config.checkoutConfig.theme,
-          ...updates
-        }
-      }
-    });
+  const updateThemeLocal = (updates: Partial<CheckoutConfiguration['checkoutConfig']['theme']>) => {
+    onConfigChange(updateTheme(config, updates));
   };
 
   return (
@@ -52,7 +44,7 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
           </label>
           <select
             value={config.checkoutConfig.layout.type}
-            onChange={(e) => updateCheckoutConfig({
+            onChange={(e) => updateCheckoutConfigLocal({
               layout: {
                 ...config.checkoutConfig.layout,
                 type: e.target.value as 'one_column' | 'two_column'
@@ -108,13 +100,13 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
               <input
                 type="color"
                 value={config.checkoutConfig.theme.primaryColor}
-                onChange={(e) => updateTheme({ primaryColor: e.target.value })}
+                onChange={(e) => updateThemeLocal({ primaryColor: e.target.value })}
                 className="w-12 h-10 border border-gray-300 rounded cursor-pointer"
               />
               <input
                 type="text"
                 value={config.checkoutConfig.theme.primaryColor}
-                onChange={(e) => updateTheme({ primaryColor: e.target.value })}
+                onChange={(e) => updateThemeLocal({ primaryColor: e.target.value })}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="#007bff"
               />
@@ -130,13 +122,13 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
               <input
                 type="color"
                 value={config.checkoutConfig.theme.secondaryColor}
-                onChange={(e) => updateTheme({ secondaryColor: e.target.value })}
+                onChange={(e) => updateThemeLocal({ secondaryColor: e.target.value })}
                 className="w-12 h-10 border border-gray-300 rounded cursor-pointer"
               />
               <input
                 type="text"
                 value={config.checkoutConfig.theme.secondaryColor}
-                onChange={(e) => updateTheme({ secondaryColor: e.target.value })}
+                onChange={(e) => updateThemeLocal({ secondaryColor: e.target.value })}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="#6c757d"
               />
@@ -152,13 +144,13 @@ export const ConfigurationPanel: React.FC<ConfigurationPanelProps> = ({
               <input
                 type="color"
                 value={config.checkoutConfig.theme.accentColor}
-                onChange={(e) => updateTheme({ accentColor: e.target.value })}
+                onChange={(e) => updateThemeLocal({ accentColor: e.target.value })}
                 className="w-12 h-10 border border-gray-300 rounded cursor-pointer"
               />
               <input
                 type="text"
                 value={config.checkoutConfig.theme.accentColor}
-                onChange={(e) => updateTheme({ accentColor: e.target.value })}
+                onChange={(e) => updateThemeLocal({ accentColor: e.target.value })}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="#28a745"
               />

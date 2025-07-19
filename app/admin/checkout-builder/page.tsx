@@ -1,4 +1,4 @@
-import CheckoutBuilder from '@/components/checkout-builder'
+import { CheckoutBuilder } from '../../../components/checkout-builder'
 import React from 'react'
 
 const CheckoutBuilderPage = () => {

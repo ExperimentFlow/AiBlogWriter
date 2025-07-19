@@ -39,15 +39,7 @@ export const SectionStylingPanel: React.FC<SectionStylingPanelProps> = ({
     return `${value}${unit}`;
   };
 
-  // Debug logging
-  console.log('SectionStylingPanel rendered:', {
-    selectedElement: {
-      id: selectedElement.id,
-      path: selectedElement.path,
-      label: selectedElement.label,
-      type: selectedElement.type
-    }
-  });
+
 
   return (
     <div className="bg-white border rounded-lg p-6 shadow-sm">

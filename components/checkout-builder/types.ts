@@ -5,6 +5,8 @@ export interface Validation {
   pattern?: string;
   minLength?: number;
   maxLength?: number;
+  min?: number;
+  max?: number;
   errorMessage?: string;
 }
 
@@ -58,13 +60,14 @@ export interface Field {
   type: string;
   label: string;
   placeholder?: string;
+  description?: string;
   required: boolean;
   validation?: Validation;
   styling?: Styling;
   conditional?: Conditional | null;
   defaultValue?: any;
   columnSpan?: number;
-  options?: FieldOption[];
+  options?: FieldOption[] | string; // Can be array of options or string with newlines
   mask?: string;
 }
 
@@ -73,6 +76,7 @@ export interface Section {
   title: string;
   fields?: Field[];
   addons?: Addon[];
+  styling?: Styling;
   displayType?: 'grid' | 'list' | 'cards';
   maxSelections?: number;
   required?: boolean;
@@ -119,24 +123,48 @@ export interface TwoColumnLayout {
   leftColumn: {
     content: 'customer_info' | 'product_info';
     width: string;
-  };
-  rightColumn: {
-    content: 'customer_info' | 'product_info';
-    width: string;
-  };
-}
-
-export interface Layout {
-  type: 'one_column' | 'two_column';
-  twoColumn?: TwoColumnLayout;
-  oneColumn?: {
     backgroundColor: string;
+    primaryColor: string;
+    secondaryColor: string;
+    margin: number;
+    padding: number;
     borderColor: string;
     borderStyle: string;
     borderWidth: number;
     borderRadius: number;
-    order: 'customer_first' | 'product_first';
   };
+  rightColumn: {
+    content: 'customer_info' | 'product_info';
+    width: string;
+    backgroundColor: string;
+    primaryColor: string;
+    secondaryColor: string;
+    margin: number;
+    padding: number;
+    borderColor: string;
+    borderStyle: string;
+    borderWidth: number;
+    borderRadius: number;
+  };
+}
+
+export interface OneColumnLayout{
+  order: 'customer_first' | 'product_first';
+  backgroundColor: string;
+  primaryColor: string;
+  secondaryColor: string;
+  margin: number;
+  padding: number;
+  borderColor: string;
+  borderStyle: string;
+  borderWidth: number;
+  borderRadius: number;
+};
+
+export interface Layout {
+  type: 'one_column' | 'two_column';
+  twoColumn?: TwoColumnLayout;
+  oneColumn?: OneColumnLayout;
 }
 
 export interface ProgressBarConfig {
@@ -175,6 +203,7 @@ export interface CheckoutConfig {
   enableHeader: boolean;
   progressBar: ProgressBarConfig;
   stepMode?: boolean;
+  styling?: Styling;
   animation: {
     enabled: boolean;
     duration: string;

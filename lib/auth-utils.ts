@@ -4,7 +4,8 @@ import prisma from "./prisma";
 export interface User {
   id: string;
   email: string;
-  name?: string;
+  firstName: string;
+  lastName: string;
   role: string;
   emailVerified: boolean;
   image?: string;
@@ -27,10 +28,14 @@ export async function getCurrentUser(): Promise<User & { tenantId?: string } | n
         user: {
           select:{
             id: true,
+            email: true,
             firstName: true,
             lastName: true,
             image: true,
             role: true,
+            emailVerified: true,
+            createdAt: true,
+            updatedAt: true,
             tenant: {
               select:{
                 id: true,
@@ -47,10 +52,6 @@ export async function getCurrentUser(): Promise<User & { tenantId?: string } | n
 
     return {
       ...session.user,
-      firstName: session.user.firstName,
-      lastName: session.user.lastName,
-      image: session.user.image,
-      role: session.user.role,
       tenantId: session.user.tenant?.id,
     };
   } catch (error) {

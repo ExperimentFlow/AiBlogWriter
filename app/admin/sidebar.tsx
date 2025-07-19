@@ -18,7 +18,8 @@ import {
   ExternalLink,
   ShoppingCart,
   Eye,
-  GitBranch
+  GitBranch,
+  Package
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -28,6 +29,7 @@ interface SidebarProps {
 
 const navigation = [
   { name: 'Analytics Dashboard', href: '/admin', icon: BarChart3 },
+  { name: 'Products', href: '/admin/products', icon: Package },
   { name: 'Payment Settings', href: '/admin/payment-settings', icon: CreditCard },
   { name: 'Checkout Builder', href: '/admin/checkout-builder', icon: ShoppingCart },
   { name: 'Checkout Demo', href: '/admin/checkout-demo', icon: Eye },

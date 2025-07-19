@@ -5,19 +5,20 @@ import { Field, Theme } from "./types";
 import { TextField } from "./fields/TextField";
 import { CheckboxField } from "./fields/CheckboxField";
 import { RadioField } from "./fields/RadioField";
+import { SelectField } from "./fields/SelectField";
+import { TextAreaField } from "./fields/TextAreaField";
+import { DateField } from "./fields/DateField";
 import { SelectableElement } from "./SelectableElement";
 import { GripVertical, Trash2 } from "lucide-react";
+import { useCheckoutBuilder } from "./contexts/CheckoutBuilderContext";
 
 interface FieldRendererProps {
   field: Field;
   value: any;
   onChange: (value: any) => void;
   error: string | null;
-  theme: Theme;
-  formData: Record<string, any>;
-  isPreview?: boolean;
-  onDeleteField?: (fieldId: string) => void;
-  onMoveField?: (fieldId: string, direction: 'up' | 'down') => void;
+  stepIndex?: number;
+  sectionIndex?: number;
 }
 
 export const FieldRenderer: React.FC<FieldRendererProps> = ({
@@ -25,12 +26,22 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
   value,
   onChange,
   error,
-  theme,
-  formData,
-  isPreview = false,
-  onDeleteField,
-  onMoveField,
+  stepIndex = 0,
+  sectionIndex = 0,
 }) => {
+  const {
+    // State from context
+    formData,
+    isPreview,
+    
+    // Computed values from context
+    theme,
+    
+    // Handlers from context
+    handleDeleteField,
+    handleMoveField,
+  } = useCheckoutBuilder();
+
   const {
     attributes,
     listeners,
@@ -61,37 +72,37 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
     label: field.label,
     placeholder: field.placeholder || "",
     description: "",
-    path: `steps[0].sections[0].fields[${field.id}]`,
+    path: `steps[${stepIndex}].sections[${sectionIndex}].fields[${field.id}]`,
     styling: {
-      backgroundColor: theme.backgroundColor,
-      color: theme.textColor,
-      padding: theme.spacing.md,
+      backgroundColor: field.styling?.backgroundColor || theme.backgroundColor,
+      color: field.styling?.color || theme.textColor,
+      padding: field.styling?.padding || theme.spacing.md,
       margin: `0 0 ${theme.spacing.md} 0`,
-      borderRadius: theme.borderRadius,
-      border: `1px solid ${theme.borderColor}`,
-      fontSize: "16px",
+      borderRadius: field.styling?.borderRadius || theme.borderRadius,
+      border: field.styling?.border || `1px solid ${theme.borderColor}`,
+      fontSize: field.styling?.fontSize || "16px",
       fontWeight: "400",
     },
   };
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onDeleteField) {
-      onDeleteField(field.id);
+    if (handleDeleteField) {
+      handleDeleteField(field.id);
     }
   };
 
   const handleMoveUp = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onMoveField) {
-      onMoveField(field.id, 'up');
+    if (handleMoveField) {
+      handleMoveField(field.id, 'up');
     }
   };
 
   const handleMoveDown = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onMoveField) {
-      onMoveField(field.id, 'down');
+    if (handleMoveField) {
+      handleMoveField(field.id, 'down');
     }
   };
 
@@ -102,8 +113,31 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
       case "tel":
       case "number":
       case "password":
+      case "url":
         return (
           <TextField
+            field={field}
+            value={value}
+            onChange={(fieldId, value) => onChange(value)}
+            error={error}
+            theme={theme}
+            isPreview={isPreview}
+          />
+        );
+      case "textarea":
+        return (
+          <TextAreaField
+            field={field}
+            value={value}
+            onChange={(fieldId, value) => onChange(value)}
+            error={error}
+            theme={theme}
+            isPreview={isPreview}
+          />
+        );
+      case "select":
+        return (
+          <SelectField
             field={field}
             value={value}
             onChange={(fieldId, value) => onChange(value)}
@@ -126,6 +160,17 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
       case "radio":
         return (
           <RadioField
+            field={field}
+            value={value}
+            onChange={(fieldId, value) => onChange(value)}
+            error={error}
+            theme={theme}
+            isPreview={isPreview}
+          />
+        );
+      case "date":
+        return (
+          <DateField
             field={field}
             value={value}
             onChange={(fieldId, value) => onChange(value)}

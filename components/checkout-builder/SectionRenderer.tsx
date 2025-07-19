@@ -6,21 +6,10 @@ import { SelectableElement } from "./SelectableElement";
 import { PlusIcon } from "lucide-react";
 import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useCheckoutBuilder } from "./contexts/CheckoutBuilderContext";
 
 interface SectionRendererProps {
   section: Section;
-  formData: Record<string, any>;
-  errors: Record<string, string | null>;
-  theme: Theme;
-  config: CheckoutConfiguration; // Add config prop
-  selectedAddons?: Addon[];
-  onAddonToggle?: (addon: any) => void;
-  onAddonQuantityChange?: (addonId: string, quantity: number) => void;
-  isPreview?: boolean;
-  onFieldChange: (fieldId: string, value: any) => void;
-  onDeleteField?: (fieldId: string) => void;
-  onMoveField?: (fieldId: string, direction: 'up' | 'down') => void;
-  onReorderFields?: (sectionId: string, oldIndex: number, newIndex: number) => void;
   stepIndex?: number;
   sectionIndex?: number;
 }
@@ -47,34 +36,46 @@ const getNestedValue = (obj: any, path: string): any => {
 
 export const SectionRenderer: React.FC<SectionRendererProps> = ({
   section,
-  formData,
-  errors,
-  theme,
-  config,
-  selectedAddons = [],
-  onAddonToggle = () => {},
-  onAddonQuantityChange = () => {},
-  isPreview = false,
-  onFieldChange,
-  onDeleteField,
-  onMoveField,
-  onReorderFields,
   stepIndex = 0,
   sectionIndex = 0,
 }) => {
+  const {
+    // State from context
+    formData,
+    errors,
+    config,
+    selectedAddons,
+    isPreview,
+    
+    // Computed values from context
+    theme,
+    
+    // Handlers from context
+    handleFieldChange,
+    handleDeleteField,
+    handleMoveField,
+    handleReorderFields,
+    handleAddField,
+    handleAddonToggle,
+    handleAddonQuantityChange,
+  } = useCheckoutBuilder();
+
   // Create dynamic path based on step and section indices
   const dynamicPath = `steps[${stepIndex}].sections[${sectionIndex}]`;
+  
+  // Get the step ID from the config
+  const stepId = config.steps[stepIndex]?.id || '';
   
   // Get custom styling from config
   const customStyling = getNestedValue(config, `${dynamicPath}.styling`) || {};
   
   // Merge custom styling with theme defaults
   const sectionStyling = {
-    backgroundColor: customStyling.backgroundColor || theme.backgroundColor,
-    color: customStyling.color || theme.textColor,
-    padding: customStyling.padding || theme.spacing.lg,
-    margin: customStyling.margin || `0 0 ${theme.spacing.xl} 0`,
-    borderRadius: customStyling.borderRadius || theme.borderRadius,
+    backgroundColor: customStyling.backgroundColor,
+    color: customStyling.color,
+    padding: customStyling.padding,
+    margin: customStyling.margin,
+    borderRadius: customStyling.borderRadius,
     border: customStyling.border || `1px solid ${theme.borderColor}`,
     fontSize: customStyling.fontSize || "18px",
     fontWeight: customStyling.fontWeight || "600",
@@ -91,7 +92,7 @@ export const SectionRenderer: React.FC<SectionRendererProps> = ({
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
-    console.log('Drag end event:', event);
+
     const { active, over } = event;
     
     if (!over || active.id === over.id) {
@@ -103,13 +104,13 @@ export const SectionRenderer: React.FC<SectionRendererProps> = ({
     const activeId = active.id as string;
     const overId = over.id as string;
     
-    console.log('Active ID:', activeId, 'Over ID:', overId);
+
     
     // Remove the "field-" prefix to get the actual field IDs
     const activeFieldId = activeId.replace('field-', '');
     const overFieldId = overId.replace('field-', '');
     
-    console.log('Active field ID:', activeFieldId, 'Over field ID:', overFieldId);
+
     
     // Find the indices of the fields
     const activeIndex = section.fields?.findIndex(field => field.id === activeFieldId) || -1;
@@ -117,11 +118,11 @@ export const SectionRenderer: React.FC<SectionRendererProps> = ({
     
     console.log('Active index:', activeIndex, 'Over index:', overIndex);
     
-    if (activeIndex !== -1 && overIndex !== -1 && onReorderFields) {
-      console.log('Calling onReorderFields:', { activeIndex, overIndex, activeFieldId, overFieldId });
-      onReorderFields(section.id, activeIndex, overIndex);
+    if (activeIndex !== -1 && overIndex !== -1 && handleReorderFields) {
+      console.log('Calling handleReorderFields:', { activeIndex, overIndex, activeFieldId, overFieldId });
+      handleReorderFields(section.id, activeIndex, overIndex);
     } else {
-      console.log('Cannot reorder:', { activeIndex, overIndex, hasOnReorderFields: !!onReorderFields });
+      console.log('Cannot reorder:', { activeIndex, overIndex, hasHandleReorderFields: !!handleReorderFields });
     }
   };
 
@@ -150,10 +151,14 @@ export const SectionRenderer: React.FC<SectionRendererProps> = ({
             {sectionElement.label}
           </h3>
           {isPreview && (
-            
-              <button type="button" className="bg-blue-500 text-white px-4 py-2">
-                <PlusIcon className="w-4 h-4" />
-              </button>
+            <button 
+              type="button" 
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
+              onClick={() => handleAddField?.(stepId, section.id, 'text')}
+              title="Add new text field"
+            >
+              <PlusIcon className="w-4 h-4" />
+            </button>
           )}
         </div>
 
@@ -185,13 +190,10 @@ export const SectionRenderer: React.FC<SectionRendererProps> = ({
                     key={field.id}
                     field={field}
                     value={formData[field.id] || ""}
-                    onChange={(value) => onFieldChange(field.id, value)}
+                    onChange={(value) => handleFieldChange(field.id, value)}
                     error={errors[field.id] || null}
-                    theme={theme}
-                    formData={formData}
-                    isPreview={isPreview}
-                    onDeleteField={onDeleteField}
-                    onMoveField={onMoveField}
+                    stepIndex={stepIndex}
+                    sectionIndex={sectionIndex}
                   />
                 ))}
               </SortableContext>
@@ -208,8 +210,8 @@ export const SectionRenderer: React.FC<SectionRendererProps> = ({
               maxSelections={section.maxSelections}
               theme={theme}
               selectedAddons={selectedAddons}
-              onAddonToggle={onAddonToggle}
-              onAddonQuantityChange={onAddonQuantityChange}
+              onAddonToggle={handleAddonToggle}
+              onAddonQuantityChange={handleAddonQuantityChange}
               isPreview={isPreview}
             />
           </div>

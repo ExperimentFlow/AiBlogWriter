@@ -20,6 +20,7 @@ model User {
   lastName      String
   accounts      Account[]
   media         Media[]
+  products      Product[]
   sessions      Session[]
   tenant        Tenant?
 
@@ -91,6 +92,7 @@ model Tenant {
   checkoutConfig  CheckoutConfig?
   gatewaySetting  GatewaySetting?
   media           Media[]
+  products        Product[]
   sessions        Session[]
   user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -146,4 +148,43 @@ model CheckoutConfig {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id          String         @id @default(cuid())
+  name        String
+  slug        String         @unique
+  description String?
+  imageUrl    String?
+  isActive    Boolean        @default(true)
+  tenantId    String
+  createdBy   String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  user        User           @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  prices      ProductPrice[]
+
+  @@unique([tenantId, slug])
+  @@map("product")
+}
+
+model ProductPrice {
+  id            String    @id @default(cuid())
+  productId     String
+  name          String
+  price         Float
+  type          String
+  interval      String?
+  intervalCount Int?
+  isDefault     Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  storePriceId  String?
+  gateway       String?
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_price")
 }

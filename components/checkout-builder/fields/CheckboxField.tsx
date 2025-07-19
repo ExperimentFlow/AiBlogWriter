@@ -37,41 +37,57 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
     }
   };
 
+  const optionsArray = Array.isArray(field.options)
+    ? field.options
+    : typeof field.options === 'string'
+      ? field.options.split('\n').filter(opt => opt.trim()).map(opt => ({ label: opt.trim(), value: opt.trim() }))
+      : [];
+
   return (
     <div
       className="field-container"
       style={{ gridColumn: `span ${field.columnSpan || 1}` }}
     >
-      <label
-        className="checkbox-label"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          cursor: "pointer",
-          gap: theme.spacing.sm,
-          color: field.styling?.labelColor || theme.textColor,
-        }}
-      >
-        <SelectableElement element={checkboxElement} isPreview={isPreview}>
-          <input
-            type="checkbox"
-            checked={value || false}
-            onChange={(e) => onChange(field.id, e.target.checked)}
-            style={{
-              accentColor: field.styling?.checkboxColor || theme.primaryColor,
-              width: field.styling?.checkboxSize || "20px",
-              height: field.styling?.checkboxSize || "20px",
-            }}
-          />
-        </SelectableElement>
-        <span style={{ 
-          fontSize: field.styling?.labelFontSize || "14px",
-          color: field.styling?.labelColor || theme.textColor
-        }}>
-          {field.label}
-          {field.required && <span style={{ color: theme.errorColor }}> *</span>}
-        </span>
-      </label>
+      <span style={{ fontSize: field.styling?.labelFontSize || "14px", color: field.styling?.labelColor || theme.textColor }}>
+        {field.label}
+        {field.required && <span style={{ color: theme.errorColor }}> *</span>}
+      </span>
+      {optionsArray.map((option, idx) => (
+        <label
+          key={option.value}
+          className="checkbox-label"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
+            gap: theme.spacing.sm,
+            color: field.styling?.labelColor || theme.textColor,
+            marginTop: theme.spacing.xs,
+          }}
+        >
+          <SelectableElement element={checkboxElement} isPreview={isPreview}>
+            <input
+              type="checkbox"
+              checked={Array.isArray(value) ? value.includes(option.value) : false}
+              onChange={(e) => {
+                let newValue = Array.isArray(value) ? [...value] : [];
+                if (e.target.checked) {
+                  newValue.push(option.value);
+                } else {
+                  newValue = newValue.filter((v) => v !== option.value);
+                }
+                onChange(field.id, newValue);
+              }}
+              style={{
+                accentColor: field.styling?.checkboxColor || theme.primaryColor,
+                width: field.styling?.checkboxSize || "20px",
+                height: field.styling?.checkboxSize || "20px",
+              }}
+            />
+          </SelectableElement>
+          <span>{option.label}</span>
+        </label>
+      ))}
       {error && (
         <div
           className="field-error"

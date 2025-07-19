@@ -75,9 +75,6 @@ CREATE TABLE "tenant" (
     "defaultLanguage" TEXT NOT NULL DEFAULT 'en',
     "favicon" TEXT NOT NULL,
     "logoUrl" TEXT,
-    "primaryColor" TEXT,
-    "secondaryColor" TEXT,
-    "stripeAccountId" TEXT,
 
     CONSTRAINT "tenant_pkey" PRIMARY KEY ("id")
 );
@@ -136,6 +133,42 @@ CREATE TABLE "CheckoutConfig" (
     CONSTRAINT "CheckoutConfig_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "product" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "description" TEXT,
+    "imageUrl" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "tenantId" TEXT NOT NULL,
+    "createdBy" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "product_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "product_price" (
+    "id" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "price" DOUBLE PRECISION NOT NULL,
+    "type" TEXT NOT NULL,
+    "interval" TEXT,
+    "intervalCount" INTEGER,
+    "isDefault" BOOLEAN NOT NULL DEFAULT false,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "storePriceId" TEXT,
+    "gateway" TEXT,
+    "deletedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "product_price_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
@@ -160,6 +193,12 @@ CREATE UNIQUE INDEX "GatewaySetting_tenantId_key" ON "GatewaySetting"("tenantId"
 -- CreateIndex
 CREATE UNIQUE INDEX "CheckoutConfig_tenantId_key" ON "CheckoutConfig"("tenantId");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "product_slug_key" ON "product"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "product_tenantId_slug_key" ON "product"("tenantId", "slug");
+
 -- AddForeignKey
 ALTER TABLE "session" ADD CONSTRAINT "session_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -183,3 +222,12 @@ ALTER TABLE "GatewaySetting" ADD CONSTRAINT "GatewaySetting_tenantId_fkey" FOREI
 
 -- AddForeignKey
 ALTER TABLE "CheckoutConfig" ADD CONSTRAINT "CheckoutConfig_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product" ADD CONSTRAINT "product_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product" ADD CONSTRAINT "product_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product_price" ADD CONSTRAINT "product_price_productId_fkey" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE CASCADE ON UPDATE CASCADE;

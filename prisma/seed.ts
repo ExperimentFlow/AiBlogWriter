@@ -4,21 +4,24 @@ const prisma = new PrismaClient();
 
 const userData = [
   {
-    name: "Alice Johnson",
+    firstName: "Alice",
+    lastName: "Johnson",
     email: "alice@example.com",
     emailVerified: true,
     password: "$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1m", // password123
     role: "admin",
   },
   {
-    name: "Bob Smith",
+    firstName: "Bob",
+    lastName: "Smith",
     email: "bob@example.com",
     emailVerified: true,
     password: "$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1m", // password123
     role: "user",
   },
   {
-    name: "Demo User",
+    firstName: "Demo",
+    lastName: "User",
     email: "demo@example.com",
     emailVerified: true,
     password: "$2b$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1m", // password123
@@ -68,7 +71,7 @@ export async function main() {
       create: u,
     });
     users.push(user);
-    console.log(`User: ${user.name} (${user.email})`);
+    console.log(`User: ${user.firstName} ${user.lastName} (${user.email})`);
   }
 
   // Create one tenant per user

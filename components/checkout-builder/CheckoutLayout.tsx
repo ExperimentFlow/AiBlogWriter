@@ -1,8 +1,10 @@
 import React from "react";
-import { Theme, Addon } from "./types";
+import { Theme, Addon, TwoColumnLayout, OneColumnLayout } from "./types";
 import { ProductSummary } from "./ProductSummary";
+import { SelectedProductsDisplay } from "./SelectedProductsDisplay";
 import { CouponField } from "./CouponField";
 import { SelectableElement } from "./SelectableElement";
+import { useCheckoutBuilder } from "./contexts/CheckoutBuilderContext";
 
 interface Product {
   id: string;
@@ -23,25 +25,8 @@ interface Coupon {
 
 interface Layout {
   type: string;
-  twoColumn?: {
-    leftColumn: {
-      content: string;
-      width: string;
-    };
-    rightColumn: {
-      content: string;
-      width: string;
-    };
-    gap: number;
-  };
-  oneColumn?: {
-    backgroundColor?: string;
-    borderWidth?: number;
-    borderStyle?: string;
-    borderColor?: string;
-    borderRadius?: number;
-    order?: "customer_first" | "product_first";
-  };
+  twoColumn?: TwoColumnLayout;
+  oneColumn?: OneColumnLayout;
 }
 
 interface CheckoutLayoutProps {
@@ -71,6 +56,8 @@ export const CheckoutLayout: React.FC<CheckoutLayoutProps> = ({
   selectedAddons = [],
   isPreview = false,
 }) => {
+  const { selectedProducts } = useCheckoutBuilder();
+
   const renderCustomerInfo = () => (
     <div className="customer-info-section">{children}</div>
   );
@@ -84,15 +71,22 @@ export const CheckoutLayout: React.FC<CheckoutLayoutProps> = ({
         appliedCoupon={appliedCoupon}
         isPreview={isPreview}
       />
-      <ProductSummary
-        products={products}
-        theme={theme}
-        appliedCoupon={appliedCoupon}
-        onUpdateQuantity={onUpdateQuantity}
-        onRemoveProduct={onRemoveProduct}
-        selectedAddons={selectedAddons}
-        isPreview={isPreview}
-      />
+      {isPreview ? (
+        <SelectedProductsDisplay
+          selectedProducts={selectedProducts}
+          isPreview={isPreview}
+        />
+      ) : (
+        <ProductSummary
+          products={products}
+          theme={theme}
+          appliedCoupon={appliedCoupon}
+          onUpdateQuantity={onUpdateQuantity}
+          onRemoveProduct={onRemoveProduct}
+          selectedAddons={selectedAddons}
+          isPreview={isPreview}
+        />
+      )}
     </div>
   );
 
@@ -165,7 +159,8 @@ export const CheckoutLayout: React.FC<CheckoutLayoutProps> = ({
       description: "Main container for one-column checkout layout",
       path: "checkoutConfig.layout.oneColumn",
       styling: {
-        backgroundColor: layout.oneColumn?.backgroundColor || theme.backgroundColor,
+        backgroundColor:
+          layout.oneColumn?.backgroundColor || theme.backgroundColor,
         padding: theme.spacing.lg,
         borderRadius: `${layout.oneColumn?.borderRadius || 8}px`,
         border: `${layout.oneColumn?.borderWidth || 1}px ${
@@ -215,6 +210,44 @@ export const CheckoutLayout: React.FC<CheckoutLayoutProps> = ({
   const { twoColumn } = layout;
   if (!twoColumn) return null;
 
+  const getStyle = (
+    contentType: "customer_info" | "product_info" = "customer_info"
+  ) => {
+    const layoutType = layout.type;
+
+    if (layoutType === "one_column") {
+      return {
+        backgroundColor: layout.oneColumn?.backgroundColor,
+        // ...add more as needed
+      };
+    }
+
+    if (layoutType === "two_column") {
+      const twoColumn = layout.twoColumn!;
+      // Find which column has the requested content
+      let col = twoColumn.leftColumn;
+      if (twoColumn.rightColumn.content === contentType) {
+        col = twoColumn.rightColumn;
+      }
+
+      return {
+        backgroundColor: col.backgroundColor,
+        primaryColor: col.primaryColor,
+        secondaryColor: col.secondaryColor,
+        margin: col.margin,
+        padding: col.padding,
+        borderColor: col.borderColor,
+        borderStyle: col.borderStyle,
+        borderWidth: col.borderWidth,
+        borderRadius: col.borderRadius,
+      };
+    }
+
+    return {};
+  };
+
+  const productInfoStyle = getStyle("product_info");
+
   const leftContent =
     twoColumn.leftColumn.content === "customer_info"
       ? renderCustomerInfo()
@@ -228,11 +261,18 @@ export const CheckoutLayout: React.FC<CheckoutLayoutProps> = ({
     id: "left-column",
     type: "layout" as const,
     label: "Left Column",
-    subtitle: twoColumn.leftColumn.content === "customer_info" ? "Customer Info" : "Product Info",
-    description: `Left column containing ${twoColumn.leftColumn.content === "customer_info" ? "customer information" : "product information"}`,
+    subtitle:
+      twoColumn.leftColumn.content === "customer_info"
+        ? "Customer Info"
+        : "Product Info",
+    description: `Left column containing ${
+      twoColumn.leftColumn.content === "customer_info"
+        ? "customer information"
+        : "product information"
+    }`,
     path: "checkoutConfig.layout.twoColumn.leftColumn",
     styling: {
-      backgroundColor: theme.backgroundColor,
+      backgroundColor: "#ffff",
       padding: theme.spacing.lg,
       borderRadius: theme.spacing.lg,
       border: `1px solid ${theme.borderColor}`,
@@ -243,8 +283,15 @@ export const CheckoutLayout: React.FC<CheckoutLayoutProps> = ({
     id: "right-column",
     type: "layout" as const,
     label: "Right Column",
-    subtitle: twoColumn.rightColumn.content === "customer_info" ? "Customer Info" : "Product Info",
-    description: `Right column containing ${twoColumn.rightColumn.content === "customer_info" ? "customer information" : "product information"}`,
+    subtitle:
+      twoColumn.rightColumn.content === "customer_info"
+        ? "Customer Info"
+        : "Product Info",
+    description: `Right column containing ${
+      twoColumn.rightColumn.content === "customer_info"
+        ? "customer information"
+        : "product information"
+    }`,
     path: "checkoutConfig.layout.twoColumn.rightColumn",
     styling: {
       backgroundColor: theme.backgroundColor,
@@ -266,10 +313,21 @@ export const CheckoutLayout: React.FC<CheckoutLayoutProps> = ({
         alignItems: "flex-start",
       }}
     >
-      <SelectableElement element={leftColumnElement} isPreview={isPreview} style={{ width: twoColumn.leftColumn.width }}>
+      <SelectableElement
+        element={leftColumnElement}
+        isPreview={isPreview}
+        style={{ width: twoColumn.leftColumn.width }}
+      >
         {leftContent}
       </SelectableElement>
-      <SelectableElement element={rightColumnElement} isPreview={isPreview} style={{ width: twoColumn.rightColumn.width }}>
+      <SelectableElement
+        element={rightColumnElement}
+        isPreview={isPreview}
+        style={{
+          width: twoColumn.rightColumn.width,
+          ...productInfoStyle,
+        }}
+      >
         {rightContent}
       </SelectableElement>
     </div>

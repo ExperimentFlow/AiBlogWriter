@@ -13,7 +13,7 @@ export const defaultCheckoutConfig: CheckoutConfiguration = {
       primaryColor: "#007bff",
       secondaryColor: "#a0a0a0",
       accentColor: "#28a745",
-      backgroundColor: "#1a1a1a",
+      backgroundColor: "#1a1a1a", // only use as this property
       textColor: "#ffffff",
       errorColor: "#ff6b6b",
       successColor: "#51cf66",
@@ -36,20 +36,42 @@ export const defaultCheckoutConfig: CheckoutConfiguration = {
         gap: 32,
         rightColumn: {
           content: 'product_info',
-          width: '40%'
+          width: '40%',
+          backgroundColor: '#ffffff',
+          primaryColor: '#007bff',
+          secondaryColor: '#6c757d',
+          margin: 0,
+          padding: 16,
+          borderColor: '#e5e7eb',
+          borderStyle: 'solid',
+          borderWidth: 1,
+          borderRadius: 8,
         },
         leftColumn: {
           content: 'customer_info',
-          width: '60%'
+          width: '60%',
+          backgroundColor: '#ffffff',
+          primaryColor: '#007bff',
+          secondaryColor: '#6c757d',
+          margin: 0,
+          padding: 16,
+          borderColor: '#e5e7eb',
+          borderStyle: 'solid',
+          borderWidth: 0,
+          borderRadius: 8,
         }
       },
       oneColumn: {
-        backgroundColor: '#1a1a1a', 
-        borderColor: '#e5e7eb',   
-        borderStyle: 'solid',    
-        borderWidth: 1,          
-        borderRadius: 8,         
-        order: 'product_first'      // 'customer_first' | 'product_first'
+        backgroundColor: '#1a1a1a',
+        borderColor: '#e5e7eb',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        borderRadius: 8,
+        order: 'product_first',
+        primaryColor: '#007bff',
+        secondaryColor: '#6c757d',
+        margin: 0,
+        padding: 0,
       }
     },
     progressBar: {
@@ -94,12 +116,24 @@ export const defaultCheckoutConfig: CheckoutConfiguration = {
         {
           id: "personal-info",
           title: "Personal Information",
+          styling:{
+            backgroundColor: "#ffffff",
+            color: "#000000",
+            padding: "16px",
+            borderRadius: "8px",
+          },
           fields: [
             {
               id: "firstName",
               type: "text",
               label: "First Name",
               placeholder: "Enter your first name",
+              styling:{
+                backgroundColor: "#ffffff",
+                color: "#000000",
+                padding: "16px",
+                borderRadius: "8px",
+              },
               required: true,
               validation: {
                 type: "required",
@@ -111,6 +145,12 @@ export const defaultCheckoutConfig: CheckoutConfiguration = {
               type: "text",
               label: "Last Name",
               placeholder: "Enter your last name",
+              styling:{
+                backgroundColor: "#ffffff",
+                color: "#000000",
+                padding: "16px",
+                borderRadius: "8px",
+              },
               required: true,
               validation: {
                 type: "required",
@@ -122,6 +162,12 @@ export const defaultCheckoutConfig: CheckoutConfiguration = {
               type: "email",
               label: "Email Address",
               placeholder: "Enter your email address",
+              styling:{
+                backgroundColor: "#ffffff",
+                color: "#000000",
+                padding: "16px",
+                borderRadius: "8px",
+              },
               required: true,
               validation: {
                 type: "email",
@@ -263,6 +309,12 @@ export const defaultCheckoutConfig: CheckoutConfiguration = {
         {
           id: "payment-method",
           title: "Payment Method",
+          styling:{
+            backgroundColor: "#ffffff",
+            color: "#000000",
+            padding: "16px",
+            borderRadius: "8px",
+          },
           fields: [
             {
               id: "cardNumber",
@@ -270,6 +322,12 @@ export const defaultCheckoutConfig: CheckoutConfiguration = {
               label: "Card Number",
               placeholder: "1234 5678 9012 3456",
               required: true,
+              styling:{
+                backgroundColor: "#ffffff",
+                color: "#000000",
+                padding: "16px",
+                borderRadius: "8px",
+              },
               validation: {
                 type: "required",
                 message: "Card number is required"
@@ -281,6 +339,12 @@ export const defaultCheckoutConfig: CheckoutConfiguration = {
               label: "Expiry Date",
               placeholder: "MM/YY",
               required: true,
+              styling:{
+                backgroundColor: "#ffffff",
+                color: "#000000",
+                padding: "16px",
+                borderRadius: "8px",
+              },
               validation: {
                 type: "required",
                 message: "Expiry date is required"
@@ -292,6 +356,12 @@ export const defaultCheckoutConfig: CheckoutConfiguration = {
               label: "CVV",
               placeholder: "123",
               required: true,
+              styling:{
+                backgroundColor: "#ffffff",
+                color: "#000000",
+                padding: "16px",
+                borderRadius: "8px",
+              },
               validation: {
                 type: "required",
                 message: "CVV is required"

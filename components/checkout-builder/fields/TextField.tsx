@@ -59,7 +59,7 @@ export const TextField: React.FC<TextFieldProps> = ({
         {field.required && <span style={{ color: theme.errorColor }}> *</span>}
       </label>
       
-      <SelectableElement element={inputElement} isPreview={isPreview}>
+      {/* <SelectableElement element={inputElement} isPreview={isPreview}> */}
         <input
           id={field.id}
           type={field.type}
@@ -92,7 +92,7 @@ export const TextField: React.FC<TextFieldProps> = ({
             }
           }}
         />
-      </SelectableElement>
+      {/* </SelectableElement> */}
       
       {error && (
         <div

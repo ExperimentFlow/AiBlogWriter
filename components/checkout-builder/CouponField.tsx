@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { Tag, Check, X, AlertCircle } from 'lucide-react';
-import { Theme } from './types';
-import { SelectableElement } from './SelectableElement';
+import React, { useState } from "react";
+import { Tag, Check, X, AlertCircle } from "lucide-react";
+import { Theme } from "./types";
+import { SelectableElement } from "./SelectableElement";
+import { useCheckoutBuilder } from "./contexts/CheckoutBuilderContext";
+import { getPrimaryColorAndSecondaryColor } from "./utils/configUtils";
 
 interface Coupon {
   code: string;
   discount: number;
-  type: 'percentage' | 'fixed';
+  type: "percentage" | "fixed";
   description: string;
 }
 
@@ -18,32 +20,47 @@ interface CouponFieldProps {
   isPreview?: boolean;
 }
 
-export const CouponField: React.FC<CouponFieldProps> = ({ 
-  theme, 
-  onApplyCoupon, 
-  onRemoveCoupon, 
+export const CouponField: React.FC<CouponFieldProps> = ({
+  theme,
+  onApplyCoupon,
+  onRemoveCoupon,
   appliedCoupon,
-  isPreview = false
+  isPreview = false,
 }) => {
-  const [couponCode, setCouponCode] = useState('');
+  const { config } = useCheckoutBuilder();
+  const [couponCode, setCouponCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Mock available coupons
   const availableCoupons: Coupon[] = [
-    { code: 'SAVE10', discount: 10, type: 'percentage', description: 'Save 10% on your order' },
-    { code: 'FREESHIP', discount: 5.99, type: 'fixed', description: 'Free shipping' },
-    { code: 'WELCOME20', discount: 20, type: 'percentage', description: 'Welcome discount 20%' },
+    {
+      code: "SAVE10",
+      discount: 10,
+      type: "percentage",
+      description: "Save 10% on your order",
+    },
+    {
+      code: "FREESHIP",
+      discount: 5.99,
+      type: "fixed",
+      description: "Free shipping",
+    },
+    {
+      code: "WELCOME20",
+      discount: 20,
+      type: "percentage",
+      description: "Welcome discount 20%",
+    },
   ];
 
   const handleApplyCoupon = async () => {
-
     if (isPreview) {
       return;
     }
 
     if (!couponCode.trim()) {
-      setError('Please enter a coupon code');
+      setError("Please enter a coupon code");
       return;
     }
 
@@ -51,15 +68,17 @@ export const CouponField: React.FC<CouponFieldProps> = ({
     setError(null);
 
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const coupon = availableCoupons.find(c => c.code.toLowerCase() === couponCode.toLowerCase());
-    
+    const coupon = availableCoupons.find(
+      (c) => c.code.toLowerCase() === couponCode.toLowerCase()
+    );
+
     if (coupon) {
       onApplyCoupon(coupon);
-      setCouponCode('');
+      setCouponCode("");
     } else {
-      setError('Invalid coupon code');
+      setError("Invalid coupon code");
     }
 
     setIsLoading(false);
@@ -70,49 +89,56 @@ export const CouponField: React.FC<CouponFieldProps> = ({
     setError(null);
   };
 
+
+
   const couponInputElement = {
-    id: 'coupon-input',
-    type: 'field' as const,
-    label: 'Coupon Input',
-    path: 'checkoutConfig.couponField.input',
+    id: "coupon-input",
+    type: "field" as const,
+    label: "Coupon Input",
+    path: "checkoutConfig.couponField.input",
     styling: {
-      backgroundColor:  theme.backgroundColor,
+      backgroundColor: theme.backgroundColor,
       color: theme.textColor,
-      padding: '8px 12px',
-      margin: '0',
+      padding: "8px 12px",
+      margin: "0",
       borderRadius: theme.borderRadius,
       border: `1px solid ${error ? theme.errorColor : theme.borderColor}`,
-      fontSize: '14px',
-      fontWeight: 'normal',
-      width: '100%',
-      height: '40px',
-    }
+      fontSize: "14px",
+      fontWeight: "normal",
+      width: "100%",
+      height: "40px",
+    },
   };
 
   const couponButtonElement = {
-    id: 'coupon-button',
-    type: 'button' as const,
-    label: 'Apply Coupon Button',
-    path: 'checkoutConfig.couponField.button',
+    id: "coupon-button",
+    type: "button" as const,
+    label: "Apply Coupon Button",
+    path: "checkoutConfig.couponField.button",
     styling: {
-      backgroundColor: isLoading || !couponCode.trim() ? theme.borderColor : theme.primaryColor,
-      color: '#ffffff',
-      padding: '8px 16px',
-      margin: '0',
+      backgroundColor:
+        isLoading || !couponCode.trim()
+          ? theme.borderColor
+          : theme.primaryColor,
+      color: "#ffffff",
+      padding: "8px 16px",
+      margin: "0",
       borderRadius: theme.borderRadius,
-      border: 'none',
-      fontSize: '14px',
-      fontWeight: '600',
-      width: 'auto',
-      height: '40px',
-    }
+      border: "none",
+      fontSize: "14px",
+      fontWeight: "600",
+      width: "auto",
+      height: "40px",
+    },
   };
+
+  const labelColor = getPrimaryColorAndSecondaryColor(config.checkoutConfig);
 
   return (
     <div className="coupon-field" style={{ marginBottom: theme.spacing.lg }}>
       <h3
         style={{
-          color: theme.textColor,
+          color: labelColor.primaryColor,
           fontSize: "16px",
           fontWeight: "600",
           marginBottom: theme.spacing.sm,
@@ -133,13 +159,19 @@ export const CouponField: React.FC<CouponFieldProps> = ({
             alignItems: "center",
             justifyContent: "space-between",
             padding: theme.spacing.md,
-            backgroundColor: theme.successColor + '20',
+            backgroundColor: theme.successColor + "20",
             border: `1px solid ${theme.successColor}`,
             borderRadius: theme.borderRadius,
             marginBottom: theme.spacing.sm,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: theme.spacing.sm }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: theme.spacing.sm,
+            }}
+          >
             <Check size={16} color={theme.successColor} />
             <div>
               <div
@@ -157,10 +189,9 @@ export const CouponField: React.FC<CouponFieldProps> = ({
                   color: theme.secondaryColor,
                 }}
               >
-                {appliedCoupon.type === 'percentage' 
-                  ? `${appliedCoupon.discount}% off` 
-                  : `$${appliedCoupon.discount.toFixed(2)} off`
-                }
+                {appliedCoupon.type === "percentage"
+                  ? `${appliedCoupon.discount}% off`
+                  : `$${appliedCoupon.discount.toFixed(2)} off`}
               </div>
             </div>
           </div>
@@ -199,30 +230,42 @@ export const CouponField: React.FC<CouponFieldProps> = ({
                 height: "40px",
                 padding: "8px 12px",
                 borderRadius: theme.borderRadius,
-                border: `1px solid ${error ? theme.errorColor : theme.borderColor}`,
+                border: `1px solid ${
+                  error ? theme.errorColor : theme.borderColor
+                }`,
                 fontSize: "14px",
-                backgroundColor: theme.colorScheme === 'dark' ? "#2a2a2a" : theme.backgroundColor,
+                backgroundColor:
+                  theme.colorScheme === "dark"
+                    ? "#2a2a2a"
+                    : theme.backgroundColor,
                 color: theme.textColor,
                 outline: "none",
               }}
-              onKeyPress={(e) => e.key === 'Enter' && handleApplyCoupon()}
+              onKeyPress={(e) => e.key === "Enter" && handleApplyCoupon()}
             />
           </SelectableElement>
-          
-          <SelectableElement element={couponButtonElement} isPreview={isPreview}>
+
+          <SelectableElement
+            element={couponButtonElement}
+            isPreview={isPreview}
+          >
             <button
               onClick={handleApplyCoupon}
-              disabled={isLoading || !couponCode.trim() && !isPreview}
+              disabled={isLoading || (!couponCode.trim() && !isPreview)}
               style={{
                 height: "40px",
                 padding: "8px 16px",
                 borderRadius: theme.borderRadius,
                 border: "none",
-                backgroundColor: isLoading || !couponCode.trim() ? theme.borderColor : theme.primaryColor,
+                backgroundColor:
+                  isLoading || !couponCode.trim()
+                    ? theme.borderColor
+                    : theme.primaryColor,
                 color: "#ffffff",
                 fontSize: "14px",
                 fontWeight: "600",
-                cursor: isLoading || !couponCode.trim() ? "not-allowed" : "pointer",
+                cursor:
+                  isLoading || !couponCode.trim() ? "not-allowed" : "pointer",
                 opacity: isLoading || !couponCode.trim() ? 0.6 : 1,
               }}
             >
@@ -252,12 +295,12 @@ export const CouponField: React.FC<CouponFieldProps> = ({
         className="available-coupons"
         style={{
           fontSize: "12px",
-          color: theme.secondaryColor,
+          color: labelColor.secondaryColor,
           marginTop: theme.spacing.xs,
         }}
       >
-        Available codes: {availableCoupons.map(c => c.code).join(', ')}
+        Available codes: {availableCoupons.map((c) => c.code).join(", ")}
       </div>
     </div>
   );
-}; 
+};

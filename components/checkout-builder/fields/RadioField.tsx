@@ -20,6 +20,12 @@ export const RadioField: React.FC<RadioFieldProps> = ({
   theme,
   isPreview = false
 }) => {
+  const optionsArray = Array.isArray(field.options)
+    ? field.options
+    : typeof field.options === 'string'
+      ? field.options.split('\n').filter(opt => opt.trim()).map(opt => ({ label: opt.trim(), value: opt.trim() }))
+      : [];
+
   return (
     <div
       className="field-container"
@@ -46,7 +52,7 @@ export const RadioField: React.FC<RadioFieldProps> = ({
           gap: theme.spacing.sm,
         }}
       >
-        {field.options?.map((option, index) => {
+        {optionsArray.map((option, index) => {
           const radioOptionElement = {
             id: `radio-option-${field.id}-${option.value}`,
             type: 'field' as const,
@@ -67,7 +73,7 @@ export const RadioField: React.FC<RadioFieldProps> = ({
           };
 
           return (
-            <SelectableElement key={option.value} element={radioOptionElement} isPreview={isPreview}>
+            <>
               <label
                 className="radio-option"
                 style={{
@@ -120,7 +126,7 @@ export const RadioField: React.FC<RadioFieldProps> = ({
                   )}
                 </div>
               </label>
-            </SelectableElement>
+            </>
           );
         })}
       </div>
