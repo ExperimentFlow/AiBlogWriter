@@ -1,6 +1,25 @@
 import { PrismaClient } from '@prisma/client';
 import prisma from './prisma';
-import { getTheme, ThemeConfig } from './themes';
+// import { getTheme, ThemeConfig } from './themes';
+import { getDefaultSupportedLanguages } from './localization';
+
+// Simple default theme configuration
+const defaultThemeConfig = {
+  colors: {
+    primary: '#3b82f6',
+    secondary: '#8b5cf6',
+    accent: '#f59e0b',
+    text: '#1f2937',
+    textSecondary: '#6b7280',
+    surface: '#ffffff',
+  },
+  gradients: {
+    hero: 'from-blue-50 to-indigo-100',
+  },
+  fonts: {
+    heading: 'font-bold',
+  },
+};
 
 export function isValidIcon(str: string) {
   return /^[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]$/u.test(str);
@@ -33,7 +52,8 @@ export async function getAllTenants() {
       user: {
         select: {
           id: true,
-          name: true,
+          firstName: true,
+          lastName: true,
           email: true,
         }
       }
@@ -57,9 +77,11 @@ export async function createTenant(
   data: {
     subdomain: string;
     name?: string;
-    emoji: string;
+    favicon: string;
     description?: string;
     userId: string;
+    defaultLanguage?: string;
+    supportedLanguages?: string[];
   }
 ) {
   const sanitizedSubdomain = sanitizeSubdomain(data.subdomain);
@@ -68,9 +90,10 @@ export async function createTenant(
     data: {
       subdomain: sanitizedSubdomain,
       name: data.name,
-      emoji: data.emoji,
+      favicon: data.favicon,
       description: data.description,
       userId: data.userId,
+      defaultLanguage: data.defaultLanguage || 'en',
     },
     include: {
       user: {
@@ -88,11 +111,13 @@ export async function updateTenant(
   id: string,
   data: {
     name?: string;
-    emoji?: string;
+    favicon?: string;
     description?: string;
     isActive?: boolean;
     theme?: string;
     themeConfig?: any;
+    defaultLanguage?: string;
+    supportedLanguages?: string[];
   }
 ) {
   return await prisma.tenant.update({
@@ -127,13 +152,13 @@ export async function isSubdomainAvailable(subdomain: string): Promise<boolean> 
 }
 
 export async function updateTenantTheme(tenantId: string, themeId: string) {
-  const theme = getTheme(themeId);
+  // const theme = getTheme(themeId);
   
   return await prisma.tenant.update({
     where: { id: tenantId },
     data: {
       theme: themeId,
-      themeConfig: theme,
+      // themeConfig: theme,
     },
     include: {
       user: {
@@ -165,11 +190,40 @@ export async function getTenantWithTheme(subdomain: string) {
 
   if (!tenant) return null;
 
-  // Get the theme configuration
-  const theme = getTheme(tenant.theme);
+  return {
+    ...tenant,
+    themeConfig: defaultThemeConfig,
+  };
+}
+
+export async function getTenantWithLocalization(subdomain: string, language?: string) {
+  const sanitizedSubdomain = sanitizeSubdomain(subdomain);
+  
+  const tenant = await prisma.tenant.findUnique({
+    where: { subdomain: sanitizedSubdomain },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        }
+      }
+    }
+  });
+
+  if (!tenant) return null;
+
+  // Determine the language to use
+  const supportedLanguages = ((tenant as any).supportedLanguages as string[]) || getDefaultSupportedLanguages();
+  const defaultLanguage = (tenant as any).defaultLanguage || 'en';
+  const currentLanguage = language && supportedLanguages.includes(language) ? language : defaultLanguage;
   
   return {
     ...tenant,
-    themeConfig: theme,
+    themeConfig: defaultThemeConfig,
+    currentLanguage,
+    supportedLanguages,
+    defaultLanguage,
   };
 } 

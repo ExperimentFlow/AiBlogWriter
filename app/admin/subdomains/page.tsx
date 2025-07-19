@@ -146,7 +146,7 @@ export default async function SubdomainsPage() {
                 className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center space-x-4">
-                  <div className="text-3xl">{tenant.emoji}</div>
+                  <div className="text-3xl">{tenant.favicon}</div>
                   <div>
                     <div className="flex items-center space-x-2">
                       <h3 className="font-medium text-gray-900">

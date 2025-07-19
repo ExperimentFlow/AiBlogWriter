@@ -12,11 +12,16 @@ export const signInSchema = z.object({
 });
 
 export const signUpSchema = z.object({
-  name: z
+  firstName: z
     .string()
-    .min(1, 'Name is required')
-    .min(2, 'Name must be at least 2 characters')
-    .max(50, 'Name must be less than 50 characters'),
+    .min(1, 'First name is required')
+    .min(2, 'First name must be at least 2 characters')
+    .max(30, 'First name must be less than 30 characters'),
+  lastName: z
+    .string()
+    .min(1, 'Last name is required')
+    .min(2, 'Last name must be at least 2 characters')
+    .max(30, 'Last name must be less than 30 characters'),
   email: z
     .string()
     .min(1, 'Email is required')
@@ -33,10 +38,37 @@ export const signUpSchema = z.object({
   confirmPassword: z
     .string()
     .min(1, 'Please confirm your password'),
+  phone: z
+    .string()
+    .optional(),
+  role: z
+    .enum(['admin', 'user', 'manager'])
+    .optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
 });
 
+export const profileUpdateSchema = z.object({
+  firstName: z
+    .string()
+    .min(2, 'First name must be at least 2 characters')
+    .max(30, 'First name must be less than 30 characters')
+    .optional(),
+  lastName: z
+    .string()
+    .min(2, 'Last name must be at least 2 characters')
+    .max(30, 'Last name must be less than 30 characters')
+    .optional(),
+  phone: z
+    .string()
+    .optional(),
+  avatar: z
+    .string()
+    .url('Please enter a valid URL')
+    .optional(),
+});
+
 export type SignInFormData = z.infer<typeof signInSchema>;
-export type SignUpFormData = z.infer<typeof signUpSchema>; 
+export type SignUpFormData = z.infer<typeof signUpSchema>;
+export type ProfileUpdateFormData = z.infer<typeof profileUpdateSchema>; 

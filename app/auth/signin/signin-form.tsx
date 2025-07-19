@@ -38,7 +38,7 @@ export function SignInForm() {
       const responseData = await response.json();
 
       if (response.ok) {
-        router.push('/admin');
+        router.push(responseData.redirectTo || '/admin');
         router.refresh();
       } else {
         setError(responseData.error || 'Sign-in failed');
