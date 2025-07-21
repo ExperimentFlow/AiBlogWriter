@@ -8,6 +8,9 @@ export interface Validation {
   min?: number;
   max?: number;
   errorMessage?: string;
+  showOnBlur?: boolean;
+  realTime?: boolean;
+  allowEmptyOnError?: boolean;
 }
 
 export interface Styling {

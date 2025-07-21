@@ -8,6 +8,7 @@ import {
 import { useCheckoutBuilder } from "../contexts/CheckoutBuilderContext";
 import { getNestedValue, updateNestedObject } from "../utils/configUtils";
 import { useElementSelection } from "../contexts/ElementSelectionContext";
+import { OptionsManager } from "../OptionsManager";
 
 interface FieldPanelProps {
   stepIndex: number;
@@ -42,7 +43,7 @@ const FieldPanel: React.FC<FieldPanelProps> = ({
   const stylingPath = `${fieldPath}.styling`;
 
   // Get current field and styling values
-  const field = section?.fields[fieldIndex];
+  const field = section?.fields?.[fieldIndex];
   const currentStyling = getNestedValue(config, stylingPath) || {};
 
   const handleFieldUpdate = (updates: Partial<typeof field>) => {
@@ -93,6 +94,25 @@ const FieldPanel: React.FC<FieldPanelProps> = ({
           placeholder="Enter field label"
         />
 
+        <SelectInput
+          label="Field Type"
+          value={field.type || "text"}
+          options={[
+            { value: "text", label: "Text Input" },
+            { value: "email", label: "Email" },
+            { value: "tel", label: "Phone Number" },
+            { value: "number", label: "Number" },
+            { value: "password", label: "Password" },
+            { value: "url", label: "URL" },
+            { value: "textarea", label: "Text Area" },
+            { value: "select", label: "Dropdown Select" },
+            { value: "checkbox", label: "Checkbox" },
+            { value: "radio", label: "Radio Buttons" },
+            { value: "date", label: "Date" },
+          ]}
+          onChange={(value) => handleFieldUpdate({ type: value })}
+        />
+
         <TextInput
           label="Placeholder"
           value={field.placeholder || ""}
@@ -114,6 +134,22 @@ const FieldPanel: React.FC<FieldPanelProps> = ({
           description="Make this field mandatory"
         />
       </div>
+
+      {/* Options Management for Select, Checkbox, and Radio */}
+      {(field.type === "select" || field.type === "checkbox" || field.type === "radio") && (
+        <div className="mb-6">
+          <h4 className="text-md font-medium text-gray-800 mb-3">Options</h4>
+          
+          <OptionsManager
+            options={field.options || ""}
+            onChange={(options) => handleFieldUpdate({ options })}
+            fieldType={field.type as "select" | "checkbox" | "radio"}
+            defaultValue={field.defaultValue as string}
+            defaultValues={field.defaultValue as string | string[]}
+            onDefaultChange={(defaultValue) => handleFieldUpdate({ defaultValue })}
+          />
+        </div>
+      )}
 
       {/* Field Styling */}
       <div className="mb-6">
@@ -316,18 +352,26 @@ const FieldPanel: React.FC<FieldPanelProps> = ({
 
       {/* Validation Settings */}
       <div className="mb-6">
-        <h4 className="text-md font-medium text-gray-800 mb-3">Validation</h4>
+        <h4 className="text-md font-medium text-gray-800 mb-3">Validation Rules</h4>
         
+        {/* Primary Validation Type */}
         <SelectInput
-          label="Validation Type"
+          label="Primary Validation"
           value={field.validation?.type || ""}
           options={[
-            { value: "", label: "None" },
-            { value: "required", label: "Required" },
-            { value: "email", label: "Email" },
+            { value: "", label: "No Validation" },
+            { value: "required", label: "Required Field" },
+            { value: "email", label: "Email Address" },
+            { value: "tel", label: "Phone Number" },
+            { value: "url", label: "URL/Link" },
+            { value: "number", label: "Numeric Value" },
+            { value: "date", label: "Date" },
             { value: "minLength", label: "Minimum Length" },
             { value: "maxLength", label: "Maximum Length" },
-            { value: "pattern", label: "Pattern" },
+            { value: "pattern", label: "Custom Pattern" },
+            { value: "min", label: "Minimum Value" },
+            { value: "max", label: "Maximum Value" },
+            { value: "range", label: "Value Range" },
           ]}
           onChange={(value) => 
             handleFieldUpdate({ 
@@ -339,19 +383,200 @@ const FieldPanel: React.FC<FieldPanelProps> = ({
           }
         />
 
-        <TextInput
-          label="Error Message"
-          value={field.validation?.message || ""}
-          onChange={(value) => 
-            handleFieldUpdate({ 
-              validation: { 
-                ...field.validation, 
-                message: value 
-              } 
-            })
-          }
-          placeholder="Enter error message"
-        />
+        {/* Conditional validation parameters based on type */}
+        {(field.validation?.type === "minLength" || field.validation?.type === "maxLength") && (
+          <SliderInput
+            label={`${field.validation.type === "minLength" ? "Minimum" : "Maximum"} Length`}
+            value={field.validation?.minLength?.toString() || field.validation?.maxLength?.toString() || "0"}
+            min={0}
+            max={1000}
+            step={1}
+            unit=""
+            onChange={(value) => 
+              handleFieldUpdate({ 
+                validation: { 
+                  ...field.validation, 
+                  [field.validation.type === "minLength" ? "minLength" : "maxLength"]: parseInt(value) || 0
+                } 
+              })
+            }
+          />
+        )}
+
+        {(field.validation?.type === "min" || field.validation?.type === "max") && (
+          <SliderInput
+            label={`${field.validation.type === "min" ? "Minimum" : "Maximum"} Value`}
+            value={field.validation?.min?.toString() || field.validation?.max?.toString() || "0"}
+            min={-1000}
+            max={10000}
+            step={1}
+            unit=""
+            onChange={(value) => 
+              handleFieldUpdate({ 
+                validation: { 
+                  ...field.validation, 
+                  [field.validation.type === "min" ? "min" : "max"]: parseInt(value) || 0
+                } 
+              })
+            }
+          />
+        )}
+
+        {field.validation?.type === "range" && (
+          <div className="space-y-3">
+            <SliderInput
+              label="Minimum Value"
+              value={field.validation?.min?.toString() || "0"}
+              min={-1000}
+              max={10000}
+              step={1}
+              unit=""
+              onChange={(value) => 
+                handleFieldUpdate({ 
+                  validation: { 
+                    ...field.validation, 
+                    min: parseInt(value) || 0
+                  } 
+                })
+              }
+            />
+            <SliderInput
+              label="Maximum Value"
+              value={field.validation?.max?.toString() || "100"}
+              min={-1000}
+              max={10000}
+              step={1}
+              unit=""
+              onChange={(value) => 
+                handleFieldUpdate({ 
+                  validation: { 
+                    ...field.validation, 
+                    max: parseInt(value) || 100
+                  } 
+                })
+              }
+            />
+          </div>
+        )}
+
+        {field.validation?.type === "pattern" && (
+          <div className="space-y-3">
+            <TextInput
+              label="Regular Expression Pattern"
+              value={field.validation?.pattern || ""}
+              onChange={(value) => 
+                handleFieldUpdate({ 
+                  validation: { 
+                    ...field.validation, 
+                    pattern: value 
+                  } 
+                })
+              }
+              placeholder="e.g., ^[A-Za-z0-9]+$ for alphanumeric"
+              description="Enter a valid regular expression pattern"
+            />
+            
+            {/* Common pattern presets */}
+            <div className="mb-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Common Patterns
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { label: "Alphanumeric", pattern: "^[A-Za-z0-9]+$" },
+                  { label: "Letters Only", pattern: "^[A-Za-z]+$" },
+                  { label: "Numbers Only", pattern: "^[0-9]+$" },
+                  { label: "Phone (US)", pattern: "^\\d{3}-\\d{3}-\\d{4}$" },
+                  { label: "ZIP Code", pattern: "^\\d{5}(-\\d{4})?$" },
+                  { label: "Credit Card", pattern: "^\\d{4}\\s\\d{4}\\s\\d{4}\\s\\d{4}$" },
+                ].map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => 
+                      handleFieldUpdate({ 
+                        validation: { 
+                          ...field.validation, 
+                          pattern: preset.pattern 
+                        } 
+                      })
+                    }
+                    className="px-3 py-2 text-xs border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Error Messages Section */}
+        <div className="border-t pt-4 mt-4">
+          <h5 className="text-sm font-medium text-gray-700 mb-3">Error Messages</h5>
+          
+          <TextInput
+            label="Custom Error Message"
+            value={field.validation?.message || ""}
+            onChange={(value) => 
+              handleFieldUpdate({ 
+                validation: { 
+                  ...field.validation, 
+                  message: value 
+                } 
+              })
+            }
+            placeholder="Enter custom error message"
+            description="Leave empty to use default messages"
+          />
+        </div>
+
+        {/* Advanced Validation Options */}
+        <div className="border-t pt-4 mt-4">
+          <h5 className="text-sm font-medium text-gray-700 mb-3">Advanced Options</h5>
+          
+          <SwitchInput
+            label="Show Error on Blur"
+            value={field.validation?.showOnBlur !== false}
+            onChange={(value) => 
+              handleFieldUpdate({ 
+                validation: { 
+                  ...field.validation, 
+                  showOnBlur: value 
+                } 
+              })
+            }
+            description="Display error message when user leaves the field"
+          />
+
+          <SwitchInput
+            label="Real-time Validation"
+            value={field.validation?.realTime !== false}
+            onChange={(value) => 
+              handleFieldUpdate({ 
+                validation: { 
+                  ...field.validation, 
+                  realTime: value 
+                } 
+              })
+            }
+            description="Validate as user types (for supported field types)"
+          />
+
+          <SwitchInput
+            label="Allow Empty on Error"
+            value={field.validation?.allowEmptyOnError === true}
+            onChange={(value) => 
+              handleFieldUpdate({ 
+                validation: { 
+                  ...field.validation, 
+                  allowEmptyOnError: value 
+                } 
+              })
+            }
+            description="Allow form submission even if this field has errors"
+          />
+        </div>
       </div>
     </div>
   );

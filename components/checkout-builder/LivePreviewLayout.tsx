@@ -15,8 +15,7 @@ import {
 
 export const LivePreviewLayout: React.FC = () => {
   const { setSelectedElement } = useElementSelection();
-  const { config, onConfigChange, handleSaveConfig, handleLoadConfig } =
-    useCheckoutBuilder();
+  const { config, onConfigChange } = useCheckoutBuilder();
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">(
     "idle"
@@ -25,6 +24,8 @@ export const LivePreviewLayout: React.FC = () => {
   const [loadStatus, setLoadStatus] = useState<"idle" | "success" | "error">(
     "idle"
   );
+  const [configName, setConfigName] = useState("Default Checkout");
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   const handleBackgroundClick = () => {
     setSelectedElement(null);
@@ -35,14 +36,28 @@ export const LivePreviewLayout: React.FC = () => {
     setSaveStatus("idle");
 
     try {
-      const result = await handleSaveConfig();
+      const response = await fetch('/api/checkout-config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          config,
+          name: configName,
+          version: config.checkoutConfig.version || '1.0.0',
+          isDefault: true
+        }),
+      });
+
+      const result = await response.json();
 
       if (result.success) {
         setSaveStatus("success");
         setTimeout(() => setSaveStatus("idle"), 3000);
+        setShowSaveDialog(false);
       } else {
         setSaveStatus("error");
-        console.error("Save failed:", result.message);
+        console.error("Save failed:", result.error);
       }
     } catch (error) {
       setSaveStatus("error");
@@ -57,14 +72,20 @@ export const LivePreviewLayout: React.FC = () => {
     setLoadStatus("idle");
 
     try {
-      const result = await handleLoadConfig();
+      const response = await fetch('/api/checkout-config', {
+        method: 'GET',
+      });
+
+      const result = await response.json();
 
       if (result.success) {
+        onConfigChange?.(result.data.config);
+        setConfigName(result.data.name);
         setLoadStatus("success");
         setTimeout(() => setLoadStatus("idle"), 3000);
       } else {
         setLoadStatus("error");
-        console.error("Load failed:", result.message);
+        console.error("Load failed:", result.error);
       }
     } catch (error) {
       setLoadStatus("error");
@@ -165,7 +186,7 @@ export const LivePreviewLayout: React.FC = () => {
               )}
             </button>
             <button
-              onClick={handleSave}
+              onClick={() => setShowSaveDialog(true)}
               disabled={isSaving}
               className={getSaveButtonClasses()}
             >
@@ -267,6 +288,44 @@ export const LivePreviewLayout: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Save Configuration Dialog */}
+      {showSaveDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Save Configuration</h3>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Configuration Name
+              </label>
+              <input
+                type="text"
+                value={configName}
+                onChange={(e) => setConfigName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter configuration name"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowSaveDialog(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors disabled:opacity-50"
+              >
+                {isSaving ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
