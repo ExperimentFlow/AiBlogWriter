@@ -37,8 +37,6 @@ const sliderStyles = `
   }
 `;
 
-
-
 import {
   FileText,
   Package,
@@ -50,21 +48,21 @@ import {
   Palette,
   Settings,
 } from "lucide-react";
-import CheckoutPagePanel from "./style-panel/CheckoutPagePanel";
-import LayoutItemPanel from "./style-panel/LayoutItemPanel";
-import SectionPanel from "./style-panel/SectionPanel";
-import FieldPanel from "./style-panel/FieldPanel";
+import {
+  CheckoutPagePanel,
+  LayoutItemPanel,
+  SectionPanel,
+  FieldPanel,
+} from "./style-panel";
 
 interface ElementStylingPanelProps {
   selectedElement: SelectableElement | null;
 }
 
-
 // --- Main Panel Component ---
 export const ElementStylingPanel: React.FC<ElementStylingPanelProps> = ({
   selectedElement,
 }) => {
-
   if (!selectedElement) {
     return (
       <div className="bg-white border rounded-lg p-6 shadow-sm">
@@ -100,7 +98,6 @@ export const ElementStylingPanel: React.FC<ElementStylingPanelProps> = ({
     }
   };
 
-  console.log("electedElement.type",selectedElement.type)
   return (
     <div className="bg-white border rounded-lg p-6 shadow-sm max-h-[calc(100vh-2rem)] overflow-y-auto">
       <style dangerouslySetInnerHTML={{ __html: sliderStyles }} />
@@ -118,40 +115,46 @@ export const ElementStylingPanel: React.FC<ElementStylingPanelProps> = ({
         {/* Checkout Page Settings - Only for checkout-page type */}
         {selectedElement.type === "checkout-page" && <CheckoutPagePanel />}
         {selectedElement.type === "layout" && <LayoutItemPanel />}
-        {selectedElement.type === "section" && (() => {
-          // Parse the path to extract step and section indices
-          const pathMatch = selectedElement.path.match(/steps\[(\d+)\]\.sections\[(\d+)\]/);
-          if (pathMatch) {
-            const stepIndex = parseInt(pathMatch[1]);
-            const sectionIndex = parseInt(pathMatch[2]);
-            const sectionId = selectedElement.id.replace('section-', '');
-            return (
-              <SectionPanel
-                stepIndex={stepIndex}
-                sectionIndex={sectionIndex}
-                sectionId={sectionId}
-              />
+        {selectedElement.type === "section" &&
+          (() => {
+            // Parse the path to extract step and section indices
+            const pathMatch = selectedElement.path.match(
+              /steps\[(\d+)\]\.sections\[(\d+)\]/
             );
-          }
-          return <p className="text-gray-500">Invalid section path</p>;
-        })()}
-        {selectedElement.type === "field" && (() => {
-          // Parse the path to extract step, section, and field indices
-          const pathMatch = selectedElement.path.match(/steps\[(\d+)\]\.sections\[(\d+)\]\.fields\[([^\]]+)\]/);
-          if (pathMatch) {
-            const stepIndex = parseInt(pathMatch[1]);
-            const sectionIndex = parseInt(pathMatch[2]);
-            const fieldId = pathMatch[3];
-            return (
-              <FieldPanel
-                stepIndex={stepIndex}
-                sectionIndex={sectionIndex}
-                fieldId={fieldId}
-              />
+            if (pathMatch) {
+              const stepIndex = parseInt(pathMatch[1]);
+              const sectionIndex = parseInt(pathMatch[2]);
+              const sectionId = selectedElement.id.replace("section-", "");
+              return (
+                <SectionPanel
+                  stepIndex={stepIndex}
+                  sectionIndex={sectionIndex}
+                  sectionId={sectionId}
+                />
+              );
+            }
+            return <p className="text-gray-500">Invalid section path</p>;
+          })()}
+        {selectedElement.type === "field" &&
+          (() => {
+            // Parse the path to extract step, section, and field indices
+            const pathMatch = selectedElement.path.match(
+              /steps\[(\d+)\]\.sections\[(\d+)\]\.fields\[([^\]]+)\]/
             );
-          }
-          return <p className="text-gray-500">Invalid field path</p>;
-        })()}
+            if (pathMatch) {
+              const stepIndex = parseInt(pathMatch[1]);
+              const sectionIndex = parseInt(pathMatch[2]);
+              const fieldId = pathMatch[3];
+              return (
+                <FieldPanel
+                  stepIndex={stepIndex}
+                  sectionIndex={sectionIndex}
+                  fieldId={fieldId}
+                />
+              );
+            }
+            return <p className="text-gray-500">Invalid field path</p>;
+          })()}
       </div>
     </div>
   );

@@ -89,7 +89,7 @@ model Tenant {
   defaultLanguage String          @default("en")
   favicon         String
   logoUrl         String?
-  checkoutConfig  CheckoutConfig?
+  checkoutConfigs CheckoutConfig[]
   gatewaySetting  GatewaySetting?
   media           Media[]
   products        Product[]
@@ -136,18 +136,20 @@ model GatewaySetting {
 
 model CheckoutConfig {
   id             String   @id @default(cuid())
-  title          String
-  description    String
-  fields         Json
-  showLogo       Boolean  @default(true)
-  logoUrl        String?
-  primaryColor   String   @default("#3b82f6")
-  buttonText     String   @default("Pay Now")
-  successMessage String   @default("Thank you for your purchase!")
-  tenantId       String   @unique
+  name           String
+  version        String   @default("1.0.0")
+  config         Json     // Full checkout configuration
+  isActive       Boolean  @default(true)
+  isDefault      Boolean  @default(false) // Default config for tenant
+  productId      String?  // If null, applies to all products
+  tenantId       String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product        Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, productId, name]) // Ensure unique config per tenant-product-name combination
+  @@map("checkout_config")
 }
 
 model Product {
@@ -164,6 +166,7 @@ model Product {
   user        User           @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   prices      ProductPrice[]
+  checkoutConfigs CheckoutConfig[]
 
   @@unique([tenantId, slug])
   @@map("product")
