@@ -55,7 +55,7 @@ const CheckoutBuilderInner = () => {
 
       {/* Live Preview */}
       <div className="flex-1">
-        <LivePreviewLayout />
+        <LivePreviewLayout /> 
       </div>
     </div>
   );

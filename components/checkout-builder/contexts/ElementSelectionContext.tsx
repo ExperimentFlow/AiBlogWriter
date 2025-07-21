@@ -3,43 +3,22 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 export interface SelectableElement {
   id: string;
   type:
+    | "product-summary"
+    | "button"
     | "header"
     | "section"
     | "field"
-    | "button"
     | "progress-bar"
     | "layout"
-    | "product-summary"
     | "order-totals"
-    | "checkout-page";
+    | "checkout-page"
+    | "pricing-model"
+    | "order-totals";
   label: string;
-  path: string; // Path to the element in the config structure
-  placeholder?: string;
-  description?: string;
-  buttonText?: string;
   subtitle?: string;
-  styling?: {
-    backgroundColor?: string;
-    color?: string;
-    padding?: string;
-    margin?: string;
-    borderRadius?: string;
-    border?: string;
-    fontSize?: string;
-    fontWeight?: string;
-    width?: string;
-    height?: string;
-    gap?: string;
-    borderWidth?: string;
-    borderColor?: string;
-    borderStyle?: string;
-    inputColor?: string;
-    placeholderColor?: string;
-    inputTextColor?: string;
-    inputBackgroundColor?: string;
-    inputGap?: string;
-    customCSS?: string;
-  };
+  description?: string;
+  path: string;
+  styling?: { [key: string]: any };
 }
 
 interface ElementSelectionContextType {

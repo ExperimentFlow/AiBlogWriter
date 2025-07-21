@@ -321,8 +321,8 @@ export const ProductSummary: React.FC<ProductSummaryProps> = ({
         <SelectableElement
           element={{
             id: "price-model-section",
-            type: "section" as const,
-            label: "Price Model Section",
+            type: "pricing-model" as const,
+            label: "Pricing Model",
             path: `checkoutConfig.productSummary.priceModelSection`,
             styling: {
               backgroundColor: theme.backgroundColor,
