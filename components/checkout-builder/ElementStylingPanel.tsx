@@ -48,6 +48,7 @@ import {
   Palette,
   Settings,
 } from "lucide-react";
+// style pannel imported from index.ts reuseable
 import {
   CheckoutPagePanel,
   LayoutItemPanel,
@@ -56,6 +57,7 @@ import {
   OrderSummaryPanel,
   PricingModelPanel,
   OrderTotalsPanel,
+  CouponPanel
 } from "./style-panel";
 
 interface ElementStylingPanelProps {
@@ -109,6 +111,7 @@ export const ElementStylingPanel: React.FC<ElementStylingPanelProps> = ({
     "product-summary": OrderSummaryPanel,
     "pricing-model": PricingModelPanel,
     "order-totals": OrderTotalsPanel,
+    "coupon-field": CouponPanel,
   };
 
   const CurrentPanel = selectedElement ? panelMap[selectedElement.type] : null;

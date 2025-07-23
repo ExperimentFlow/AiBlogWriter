@@ -13,9 +13,27 @@ const OrderTotalsPanel: React.FC<OrderTotalsPanelProps> = ({ path }) => {
 
   if (!selectedElement) return null;
 
-  // Get current styling for the order totals
+  // Get current styling and values for the order totals
   const currentStyling = getNestedValue(config, path + ".styling") || {};
-  const currentSection = getNestedValue(config, path.replace(".styling", "")) || {};
+  const currentTotals = getNestedValue(config, path + ".totals") || {
+    subtotal: { label: "Subtotal", value: "$0.00", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
+    shipping: { label: "Shipping", value: "$5.99", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
+    tax: { label: "Tax", value: "$0.00", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
+    pricingModel: { label: "Pricing Model", value: "One-Time Payment", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
+    total: { label: "Total", value: "$5.99", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
+  };
+
+  const handleTotalsUpdate = (key: string, updates: Partial<typeof currentTotals["subtotal"]>) => {
+    const updatedTotals = {
+      ...currentTotals,
+      [key]: {
+        ...currentTotals[key],
+        ...updates,
+      },
+    };
+    const updatedConfig = updateNestedObject(config, path + ".totals", updatedTotals);
+    setConfig(updatedConfig);
+  };
 
   const handleStylingUpdate = (updates: Partial<typeof currentStyling>) => {
     const updatedStyling = {
@@ -26,31 +44,16 @@ const OrderTotalsPanel: React.FC<OrderTotalsPanelProps> = ({ path }) => {
     setConfig(updatedConfig);
   };
 
-  const handleTitleUpdate = (value: string) => {
-    const updatedConfig = updateNestedObject(config, path + ".title", value);
-    setConfig(updatedConfig);
-  };
-
   return (
     <div className="p-4">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Section Settings</h3>
-
-      {/* Section Title */}
-      <TextInput
-        label="Section Title"
-        value={currentSection.title || ""}
-        onChange={handleTitleUpdate}
-        placeholder="Enter section title"
-      />
-
-      {/* Section Background Color */}
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Totals Settings</h3>
+      {/* Section Styling Controls */}
+      <h3 className="text-md font-semibold text-gray-800 mb-2 mt-6">Section Styling</h3>
       <ColorInput
         label="Section Background Color"
         value={currentStyling.backgroundColor}
         onChange={(value) => handleStylingUpdate({ backgroundColor: value })}
       />
-
-      {/* Title Color */}
       <ColorInput
         label="Title Color"
         value={currentStyling.color}
@@ -130,6 +133,54 @@ const OrderTotalsPanel: React.FC<OrderTotalsPanelProps> = ({ path }) => {
           Format: width style color (e.g., "1px solid #e5e7eb")
         </p>
       </div>
+
+      {(Object.entries(currentTotals) as [string, {
+        label: string;
+        value: string;
+        textColor: string;
+        bgColor: string;
+        primaryColor: string;
+      }][]).map(([key, item]) => (
+        <div key={key} className="mb-6 p-3 rounded border border-gray-200 bg-gray-50">
+          <div className="mb-2">
+            <TextInput
+              label="Label"
+              value={item.label}
+              onChange={(val) => handleTotalsUpdate(key, { label: val })}
+              placeholder="Label"
+            />
+          </div>
+          <div className="mb-2">
+            <TextInput
+              label="Value"
+              value={item.value}
+              onChange={(val) => handleTotalsUpdate(key, { value: val })}
+              placeholder="Value"
+            />
+          </div>
+          <div className="mb-2">
+            <ColorInput
+              label="Text Color"
+              value={item.textColor}
+              onChange={(val) => handleTotalsUpdate(key, { textColor: val })}
+            />
+          </div>
+          <div className="mb-2">
+            <ColorInput
+              label="Background Color"
+              value={item.bgColor}
+              onChange={(val) => handleTotalsUpdate(key, { bgColor: val })}
+            />
+          </div>
+          <div className="mb-2">
+            <ColorInput
+              label="Primary Color"
+              value={item.primaryColor}
+              onChange={(val) => handleTotalsUpdate(key, { primaryColor: val })}
+            />
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

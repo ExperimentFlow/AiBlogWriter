@@ -5,3 +5,4 @@ export { default as FieldPanel } from './FieldPanel';
 export { default as OrderSummaryPanel } from './OrderSummaryPanel';
 export { default as PricingModelPanel } from './PricingModelPanel';
 export { default as OrderTotalsPanel } from './OrderTotalsPanel'; 
+export { default as CouponPanel } from './CouponPanel'; 

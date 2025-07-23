@@ -13,7 +13,7 @@ export interface SelectableElement {
     | "order-totals"
     | "checkout-page"
     | "pricing-model"
-    | "order-totals";
+    | "coupon-field";
   label: string;
   subtitle?: string;
   description?: string;

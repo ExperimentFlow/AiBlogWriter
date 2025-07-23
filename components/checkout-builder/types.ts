@@ -207,6 +207,7 @@ export interface CheckoutConfig {
   progressBar: ProgressBarConfig;
   stepMode?: boolean;
   styling?: Styling;
+  couponField?: any;
   animation: {
     enabled: boolean;
     duration: string;
