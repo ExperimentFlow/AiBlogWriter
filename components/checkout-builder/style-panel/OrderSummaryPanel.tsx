@@ -14,15 +14,15 @@ const OrderSummaryPanel: React.FC<OrderSummaryPanelProps> = ({ path }) => {
   if (!selectedElement) return null;
 
   // Get current styling for the order summary
-  const currentStyling = getNestedValue(config, path + ".styling") || {};
+  const configStyling = getNestedValue(config, path + ".styling") || {};
   const currentSection = getNestedValue(config, path.replace(".styling", "")) || {};
 
-  const handleStylingUpdate = (updates: Partial<typeof currentStyling>) => {
-    const updatedStyling = {
-      ...currentStyling,
-      ...updates,
-    };
-    const updatedConfig = updateNestedObject(config, path + ".styling", updatedStyling);
+  const handleStylingUpdate = (updates: any) => {
+    const updatedConfig = updateNestedObject(
+      config,
+      path + ".styling",
+      { ...configStyling, ...updates }
+    );
     setConfig(updatedConfig);
   };
 
@@ -46,73 +46,59 @@ const OrderSummaryPanel: React.FC<OrderSummaryPanelProps> = ({ path }) => {
       {/* Section Background Color */}
       <ColorInput
         label="Section Background Color"
-        value={currentStyling.backgroundColor}
+        value={configStyling.backgroundColor || "#fff"}
         onChange={(value) => handleStylingUpdate({ backgroundColor: value })}
       />
-
-      {/* Title Color */}
       <ColorInput
         label="Title Color"
-        value={currentStyling.color}
+        value={configStyling.color || "#111"}
         onChange={(value) => handleStylingUpdate({ color: value })}
       />
-
-      {/* Padding */}
       <SliderInput
         label="Padding"
-        value={currentStyling.padding || "16px"}
+        value={typeof configStyling.padding === "number" ? `${configStyling.padding}px` : configStyling.padding || "16px"}
         min={0}
         max={50}
         step={4}
         unit="px"
-        onChange={(value) => handleStylingUpdate({ padding: value })}
+        onChange={(value) => handleStylingUpdate({ padding: parseInt(value.replace("px", "")) })}
       />
-
-      {/* Margin */}
       <SliderInput
         label="Margin"
-        value={currentStyling.margin || "0px"}
+        value={typeof configStyling.margin === "number" ? `${configStyling.margin}px` : configStyling.margin || "0px"}
         min={0}
         max={50}
         step={4}
         unit="px"
-        onChange={(value) => handleStylingUpdate({ margin: value })}
+        onChange={(value) => handleStylingUpdate({ margin: parseInt(value.replace("px", "")) })}
       />
-
-      {/* Border Radius */}
       <SliderInput
         label="Border Radius"
-        value={currentStyling.borderRadius || "8px"}
+        value={typeof configStyling.borderRadius === "number" ? `${configStyling.borderRadius}px` : configStyling.borderRadius || "8px"}
         min={0}
         max={20}
         step={2}
         unit="px"
-        onChange={(value) => handleStylingUpdate({ borderRadius: value })}
+        onChange={(value) => handleStylingUpdate({ borderRadius: parseInt(value.replace("px", "")) })}
       />
-
-      {/* Gap Between Elements */}
       <SliderInput
         label="Gap Between Elements"
-        value={currentStyling.gap || "12px"}
+        value={typeof configStyling.gap === "number" ? `${configStyling.gap}px` : configStyling.gap || "12px"}
         min={0}
         max={30}
         step={2}
         unit="px"
-        onChange={(value) => handleStylingUpdate({ gap: value })}
+        onChange={(value) => handleStylingUpdate({ gap: parseInt(value.replace("px", "")) })}
       />
-
-      {/* Font Size */}
       <SliderInput
         label="Font Size"
-        value={currentStyling.fontSize || "16px"}
+        value={typeof configStyling.fontSize === "number" ? `${configStyling.fontSize}px` : configStyling.fontSize || "16px"}
         min={12}
         max={24}
         step={1}
         unit="px"
-        onChange={(value) => handleStylingUpdate({ fontSize: value })}
+        onChange={(value) => handleStylingUpdate({ fontSize: parseInt(value.replace("px", "")) })}
       />
-
-      {/* Border */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Border
@@ -120,7 +106,7 @@ const OrderSummaryPanel: React.FC<OrderSummaryPanelProps> = ({ path }) => {
         <div className="grid grid-cols-2 gap-2">
           <input
             type="text"
-            value={currentStyling.border || "1px solid #e5e7eb"}
+            value={configStyling.border || "1px solid #e5e7eb"}
             onChange={(e) => handleStylingUpdate({ border: e.target.value })}
             placeholder="1px solid #e5e7eb"
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"

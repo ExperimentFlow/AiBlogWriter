@@ -12,8 +12,9 @@ const CouponPanel: React.FC<CouponPanelProps> = ({ path }) => {
 
   // Handlers for updating config
   const handleStylingUpdate = (section: string, updates: Record<string, string>) => {
+    const currentSectionStyling = couponStyling[section] || {};
     const updatedStyling = {
-      ...couponStyling[section],
+      ...currentSectionStyling,
       ...updates,
     };
     setConfig({
