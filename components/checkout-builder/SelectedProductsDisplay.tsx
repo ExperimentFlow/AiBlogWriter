@@ -132,7 +132,7 @@ export const SelectedProductsDisplay: React.FC<SelectedProductsDisplayProps> = (
             marginBottom: theme.spacing.md,
           }}
         >
-          Order Summary dfdf
+          Order Summary
         </h3>
         <div
           style={{

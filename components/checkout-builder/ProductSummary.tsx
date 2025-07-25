@@ -135,194 +135,378 @@ export const ProductSummary: React.FC<ProductSummaryProps> = ({
   const labelColor = getPrimaryColorAndSecondaryColor(config.checkoutConfig);
   return (
     <div className="product-summary" style={{ marginBottom: theme.spacing.lg }}>
-      <SelectableElement element={productSummaryElement} isPreview={isPreview}>
-        <h3
-          style={{
-            color: labelColor.primaryColor,
-            fontSize: "18px",
-            fontWeight: "600",
-            marginBottom: theme.spacing.md,
-            display: "flex",
-            alignItems: "center",
-            gap: theme.spacing.sm,
-          }}
-        >
-          <Package size={20} />
-          {productSummaryElement.label}
-        </h3>
-        <div
-          className="products-list"
-          style={{ marginBottom: theme.spacing.lg }}
-        >
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="product-item"
-              style={{
-                display: "flex",
-                gap: theme.spacing.md,
-                padding: theme.spacing.md,
-                border: `1px solid ${theme.borderColor}`,
-                borderRadius: theme.borderRadius,
-                marginBottom: theme.spacing.sm,
-                backgroundColor:
-                  theme.colorScheme === "dark"
-                    ? "#2a2a2a"
-                    : theme.backgroundColor,
-              }}
-            >
+      {isPreview ? (
+        <SelectableElement element={productSummaryElement} isPreview={isPreview}>
+          <h3
+            style={{
+              color: labelColor.primaryColor,
+              fontSize: "18px",
+              fontWeight: "600",
+              marginBottom: theme.spacing.md,
+              display: "flex",
+              alignItems: "center",
+              gap: theme.spacing.sm,
+            }}
+          >
+            <Package size={20} />
+            {productSummaryElement.label}
+          </h3>
+          <div
+            className="products-list"
+            style={{ marginBottom: theme.spacing.lg }}
+          >
+            {products.map((product) => (
               <div
-                className="product-image"
+                key={product.id}
+                className="product-item"
                 style={{
-                  width: "60px",
-                  height: "60px",
+                  display: "flex",
+                  gap: theme.spacing.md,
+                  padding: theme.spacing.md,
+                  border: `1px solid ${theme.borderColor}`,
                   borderRadius: theme.borderRadius,
-                  overflow: "hidden",
-                  flexShrink: 0,
+                  marginBottom: theme.spacing.sm,
+                  backgroundColor:
+                    theme.colorScheme === "dark"
+                      ? "#2a2a2a"
+                      : theme.backgroundColor,
                 }}
               >
-                <img
-                  src={product.image}
-                  alt={product.name}
+                <div
+                  className="product-image"
                   style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              </div>
-              <div className="product-details" style={{ flex: 1 }}>
-                <h4
-                  style={{
-                    color: theme.textColor,
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    marginBottom: "4px",
+                    width: "60px",
+                    height: "60px",
+                    borderRadius: theme.borderRadius,
+                    overflow: "hidden",
+                    flexShrink: 0,
                   }}
                 >
-                  {product.name}
-                </h4>
-                {product.variant && (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+                <div className="product-details" style={{ flex: 1 }}>
+                  <h4
+                    style={{
+                      color: theme.textColor,
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {product.name}
+                  </h4>
+                  {product.variant && (
+                    <p
+                      style={{
+                        color: theme.secondaryColor,
+                        fontSize: "12px",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      {product.variant}
+                    </p>
+                  )}
                   <p
                     style={{
                       color: theme.secondaryColor,
                       fontSize: "12px",
-                      marginBottom: "4px",
+                      marginBottom: theme.spacing.sm,
                     }}
                   >
-                    {product.variant}
+                    {product.description}
                   </p>
-                )}
-                <p
-                  style={{
-                    color: theme.secondaryColor,
-                    fontSize: "12px",
-                    marginBottom: theme.spacing.sm,
-                  }}
-                >
-                  {product.description}
-                </p>
-                <div
-                  className="product-actions"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
                   <div
-                    className="quantity-controls"
+                    className="product-actions"
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: theme.spacing.sm,
+                      justifyContent: "space-between",
                     }}
                   >
-                    <button
-                      onClick={() =>
-                        onUpdateQuantity?.(
-                          product.id,
-                          Math.max(1, product.quantity - 1)
-                        )
-                      }
+                    <div
+                      className="quantity-controls"
                       style={{
-                        width: "24px",
-                        height: "24px",
-                        borderRadius: "4px",
-                        border: `1px solid ${theme.borderColor}`,
-                        backgroundColor: theme.backgroundColor,
-                        color: theme.textColor,
-                        cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "12px",
+                        gap: theme.spacing.sm,
                       }}
                     >
-                      -
-                    </button>
-                    <span
+                      <button
+                        onClick={() =>
+                          onUpdateQuantity?.(
+                            product.id,
+                            Math.max(1, product.quantity - 1)
+                          )
+                        }
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          borderRadius: "4px",
+                          border: `1px solid ${theme.borderColor}`,
+                          backgroundColor: theme.backgroundColor,
+                          color: theme.textColor,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "12px",
+                        }}
+                      >
+                        -
+                      </button>
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          color: theme.textColor,
+                          minWidth: "20px",
+                          textAlign: "center",
+                        }}
+                      >
+                        {product.quantity}
+                      </span>
+                      <button
+                        onClick={() =>
+                          onUpdateQuantity?.(product.id, product.quantity + 1)
+                        }
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          borderRadius: "4px",
+                          border: `1px solid ${theme.borderColor}`,
+                          backgroundColor: theme.backgroundColor,
+                          color: theme.textColor,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "12px",
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <div
+                      className="product-price"
                       style={{
-                        fontSize: "14px",
-                        color: theme.textColor,
-                        minWidth: "20px",
-                        textAlign: "center",
-                      }}
-                    >
-                      {product.quantity}
-                    </span>
-                    <button
-                      onClick={() =>
-                        onUpdateQuantity?.(product.id, product.quantity + 1)
-                      }
-                      style={{
-                        width: "24px",
-                        height: "24px",
-                        borderRadius: "4px",
-                        border: `1px solid ${theme.borderColor}`,
-                        backgroundColor: theme.backgroundColor,
-                        color: theme.textColor,
-                        cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "12px",
+                        gap: theme.spacing.sm,
                       }}
                     >
-                      +
-                    </button>
-                  </div>
-                  <div
-                    className="product-price"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: theme.spacing.sm,
-                    }}
-                  >
-                    <span
-                      style={{
-                        color: theme.primaryColor,
-                        fontSize: "16px",
-                        fontWeight: "600",
-                      }}
-                    >
-                      ${(product.price * product.quantity).toFixed(2)}
-                    </span>
+                      <span
+                        style={{
+                          color: theme.primaryColor,
+                          fontSize: "16px",
+                          fontWeight: "600",
+                        }}
+                      >
+                        ${(product.price * product.quantity).toFixed(2)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </SelectableElement>
+      ) : (
+        <div>
+          <h3
+            style={{
+              color: labelColor.primaryColor,
+              fontSize: "18px",
+              fontWeight: "600",
+              marginBottom: theme.spacing.md,
+              display: "flex",
+              alignItems: "center",
+              gap: theme.spacing.sm,
+            }}
+          >
+            <Package size={20} />
+            {productSummaryElement.label}
+          </h3>
+          <div
+            className="products-list"
+            style={{ marginBottom: theme.spacing.lg }}
+          >
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="product-item"
+                style={{
+                  display: "flex",
+                  gap: theme.spacing.md,
+                  padding: theme.spacing.md,
+                  border: `1px solid ${theme.borderColor}`,
+                  borderRadius: theme.borderRadius,
+                  marginBottom: theme.spacing.sm,
+                  backgroundColor:
+                    theme.colorScheme === "dark"
+                      ? "#2a2a2a"
+                      : theme.backgroundColor,
+                }}
+              >
+                <div
+                  className="product-image"
+                  style={{
+                    width: "60px",
+                    height: "60px",
+                    borderRadius: theme.borderRadius,
+                    overflow: "hidden",
+                    flexShrink: 0,
+                  }}
+                >
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+                <div className="product-details" style={{ flex: 1 }}>
+                  <h4
+                    style={{
+                      color: theme.textColor,
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    {product.name}
+                  </h4>
+                  {product.variant && (
+                    <p
+                      style={{
+                        color: theme.secondaryColor,
+                        fontSize: "12px",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      {product.variant}
+                    </p>
+                  )}
+                  <p
+                    style={{
+                      color: theme.secondaryColor,
+                      fontSize: "12px",
+                      marginBottom: theme.spacing.sm,
+                    }}
+                  >
+                    {product.description}
+                  </p>
+                  <div
+                    className="product-actions"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div
+                      className="quantity-controls"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: theme.spacing.sm,
+                      }}
+                    >
+                      <button
+                        onClick={() =>
+                          onUpdateQuantity?.(
+                            product.id,
+                            Math.max(1, product.quantity - 1)
+                          )
+                        }
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          borderRadius: "4px",
+                          border: `1px solid ${theme.borderColor}`,
+                          backgroundColor: theme.backgroundColor,
+                          color: theme.textColor,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "12px",
+                        }}
+                      >
+                        -
+                      </button>
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          color: theme.textColor,
+                          minWidth: "20px",
+                          textAlign: "center",
+                        }}
+                      >
+                        {product.quantity}
+                      </span>
+                      <button
+                        onClick={() =>
+                          onUpdateQuantity?.(product.id, product.quantity + 1)
+                        }
+                        style={{
+                          width: "24px",
+                          height: "24px",
+                          borderRadius: "4px",
+                          border: `1px solid ${theme.borderColor}`,
+                          backgroundColor: theme.backgroundColor,
+                          color: theme.textColor,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "12px",
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <div
+                      className="product-price"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: theme.spacing.sm,
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: theme.primaryColor,
+                          fontSize: "16px",
+                          fontWeight: "600",
+                        }}
+                      >
+                        ${(product.price * product.quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </SelectableElement>
+      )}
       {/* Price Model Selector */}
       {products.length > 0 && (
         <SelectableElement
           element={{
             id: "price-model-section",
-            type: "section" as const,
-            label: "Price Model Section",
+            type: "pricing-model" as const,
+            label: "Pricing Model",
             path: `checkoutConfig.productSummary.priceModelSection`,
             styling: {
               backgroundColor: theme.backgroundColor,
