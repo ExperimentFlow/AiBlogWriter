@@ -8,7 +8,7 @@ interface PricingModelPanelProps {
 }
 
 const PricingModelPanel: React.FC<PricingModelPanelProps> = ({ path }) => {
-  const { config, setConfig } = useCheckoutBuilder();
+  const {config, setConfig } = useCheckoutBuilder();
   const { selectedElement } = useElementSelection();
 
   if (!selectedElement) return null;
@@ -16,6 +16,19 @@ const PricingModelPanel: React.FC<PricingModelPanelProps> = ({ path }) => {
   // Get current styling for the pricing model
   const currentStyling = getNestedValue(config, path + ".styling") || {};
   const currentSection = getNestedValue(config, path.replace(".styling", "")) || {};
+
+  // Default values
+  const DEFAULTS = {
+    title: "Pricing Model",
+    backgroundColor: "#fff",
+    color: "#111",
+    padding: "16px",
+    margin: "0px",
+    borderRadius: "8px",
+    gap: "12px",
+    fontSize: "16px",
+    border: "1px solid #e5e7eb",
+  };
 
   const handleStylingUpdate = (updates: Partial<typeof currentStyling>) => {
     const updatedStyling = {
@@ -34,33 +47,32 @@ const PricingModelPanel: React.FC<PricingModelPanelProps> = ({ path }) => {
   return (
     <div className="p-4">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Section Settings</h3>
-
       {/* Section Title */}
       <TextInput
         label="Section Title"
-        value={currentSection.title || ""}
+        value={currentSection.title || DEFAULTS.title}
         onChange={handleTitleUpdate}
-        placeholder="Enter section title"
+        placeholder={DEFAULTS.title}
       />
 
       {/* Section Background Color */}
       <ColorInput
         label="Section Background Color"
-        value={currentStyling.backgroundColor}
+        value={currentStyling.backgroundColor || DEFAULTS.backgroundColor}
         onChange={(value) => handleStylingUpdate({ backgroundColor: value })}
       />
 
       {/* Title Color */}
       <ColorInput
         label="Title Color"
-        value={currentStyling.color}
+        value={currentStyling.color || DEFAULTS.color}
         onChange={(value) => handleStylingUpdate({ color: value })}
       />
 
       {/* Padding */}
       <SliderInput
         label="Padding"
-        value={currentStyling.padding || "16px"}
+        value={currentStyling.padding || DEFAULTS.padding}
         min={0}
         max={50}
         step={4}
@@ -71,7 +83,7 @@ const PricingModelPanel: React.FC<PricingModelPanelProps> = ({ path }) => {
       {/* Margin */}
       <SliderInput
         label="Margin"
-        value={currentStyling.margin || "0px"}
+        value={currentStyling.margin || DEFAULTS.margin}
         min={0}
         max={50}
         step={4}
@@ -82,7 +94,7 @@ const PricingModelPanel: React.FC<PricingModelPanelProps> = ({ path }) => {
       {/* Border Radius */}
       <SliderInput
         label="Border Radius"
-        value={currentStyling.borderRadius || "8px"}
+        value={currentStyling.borderRadius || DEFAULTS.borderRadius}
         min={0}
         max={20}
         step={2}
@@ -93,7 +105,7 @@ const PricingModelPanel: React.FC<PricingModelPanelProps> = ({ path }) => {
       {/* Gap Between Elements */}
       <SliderInput
         label="Gap Between Elements"
-        value={currentStyling.gap || "12px"}
+        value={currentStyling.gap || DEFAULTS.gap}
         min={0}
         max={30}
         step={2}
@@ -104,7 +116,7 @@ const PricingModelPanel: React.FC<PricingModelPanelProps> = ({ path }) => {
       {/* Font Size */}
       <SliderInput
         label="Font Size"
-        value={currentStyling.fontSize || "16px"}
+        value={currentStyling.fontSize || DEFAULTS.fontSize}
         min={12}
         max={24}
         step={1}
@@ -120,9 +132,9 @@ const PricingModelPanel: React.FC<PricingModelPanelProps> = ({ path }) => {
         <div className="grid grid-cols-2 gap-2">
           <input
             type="text"
-            value={currentStyling.border || "1px solid #e5e7eb"}
+            value={currentStyling.border || DEFAULTS.border}
             onChange={(e) => handleStylingUpdate({ border: e.target.value })}
-            placeholder="1px solid #e5e7eb"
+            placeholder={DEFAULTS.border}
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
           />
         </div>

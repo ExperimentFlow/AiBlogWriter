@@ -152,32 +152,23 @@ const OrderTotalsPanel: React.FC<OrderTotalsPanelProps> = ({ path }) => {
         </p>
       </div>
 
-      {(Object.entries(currentTotals) as [string, {
-        label: string;
-        value: string;
-        textColor: string;
-        bgColor: string;
-        primaryColor: string;
-      }][]).map(([key, item]) => (
-        <div key={key} className="mb-6 p-3 rounded border border-gray-200 bg-gray-50">
-          <div className="mb-2">
-            <TextInput
-              label="Label"
-              value={item.label}
-              onChange={(val) => handleTotalsUpdate(key, { label: val })}
-              placeholder="Label"
-            />
-          </div>
-          <div className="mb-2">
-            <TextInput
-              label="Value"
-              value={item.value}
-              onChange={(val) => handleTotalsUpdate(key, { value: val })}
-              placeholder="Value"
-            />
-          </div>
+      {/* Single Label and Value with color pickers */}
+      <div className="mb-6 p-3 rounded border border-gray-200 bg-gray-50">
+        <div className="mb-2 flex items-center gap-3">
+          <ColorInput
+            label="Label Color"
+            value={currentStyling.labelColor || "#111"}
+            onChange={val => handleStylingUpdate({ labelColor: val })}
+          />
         </div>
-      ))}
+        <div className="mb-2 flex items-center gap-3">
+          <ColorInput
+            label="Value Color"
+            value={currentStyling.valueColor || "#111"}
+            onChange={val => handleStylingUpdate({ valueColor: val })}
+          />
+        </div>
+      </div>
     </div>
   );
 };

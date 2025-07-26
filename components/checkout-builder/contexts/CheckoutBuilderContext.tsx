@@ -443,6 +443,10 @@ export const CheckoutBuilderProvider: React.FC<CheckoutBuilderProviderProps> = (
     );
   }, []);
 
+
+
+  
+
   const handleRemoveProduct = useCallback((productId: string) => {
     setProducts((prev) => prev.filter((product) => product.id !== productId));
   }, []);

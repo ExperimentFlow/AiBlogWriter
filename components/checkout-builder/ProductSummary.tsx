@@ -49,7 +49,7 @@ export const ProductSummary: React.FC<ProductSummaryProps> = ({
   const [selectedPriceModel, setSelectedPriceModel] =
     useState<string>("one-time");
 
-    const {config} = useCheckoutBuilder()
+  const { config } = useCheckoutBuilder()
 
   const priceModels = [
     {
@@ -501,7 +501,7 @@ export const ProductSummary: React.FC<ProductSummaryProps> = ({
         </div>
       )}
       {/* Price Model Selector */}
-      {products.length > 0 && (
+      {products.length > 0 && products.every((p) => p.quantity > 1) && (
         <SelectableElement
           element={{
             id: "price-model-section",

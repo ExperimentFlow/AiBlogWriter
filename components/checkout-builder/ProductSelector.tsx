@@ -408,60 +408,61 @@ export const ProductSelector: React.FC<ProductSelectorProps> = ({
                   </div>
                 </div>
 
-                {/* Price Options */}
-                <div>
-                  <Label className="text-sm font-medium text-gray-700 mb-3 block">Price Options</Label>
-                  <div className="space-y-3">
-                    {currentProduct.prices
-                      .filter(price => price.isActive)
-                      .map((price) => (
-                        <div key={price.id} className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
-                          <Checkbox
-                            id={`price-${price.id}`}
-                            checked={selectedProducts[0].selectedPrices.includes(price.id)}
-                            onCheckedChange={() => handlePriceToggle(selectedProducts[0].productId, price.id)}
-                          />
-                          <Label 
-                            htmlFor={`price-${price.id}`}
-                            className="flex-1 cursor-pointer"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium text-gray-900">{price.name}</span>
-                                {price.isDefault && (
-                                  <Badge variant="secondary" className="text-xs">
-                                    Default
-                                  </Badge>
-                                )}
-                                {price.type === 'subscription' && (
-                                  <Badge variant="outline" className="text-xs">
-                                    Subscription
-                                  </Badge>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-2 text-sm">
-                                <div className="flex items-center gap-1">
-                                  <DollarSign className="h-4 w-4 text-green-600" />
-                                  <span className="font-semibold text-green-600">{formatPrice(price)}</span>
+                {/* Price Options: Only show if quantity === 1 */}
+                {selectedProducts[0].quantity === 1 && (
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Price Options</Label>
+                    <div className="space-y-3">
+                      {currentProduct.prices
+                        .filter(price => price.isActive)
+                        .map((price) => (
+                          <div key={price.id} className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors">
+                            <Checkbox
+                              id={`price-${price.id}`}
+                              checked={selectedProducts[0].selectedPrices.includes(price.id)}
+                              onCheckedChange={() => handlePriceToggle(selectedProducts[0].productId, price.id)}
+                            />
+                            <Label 
+                              htmlFor={`price-${price.id}`}
+                              className="flex-1 cursor-pointer"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-gray-900">{price.name}</span>
+                                  {price.isDefault && (
+                                    <Badge variant="secondary" className="text-xs">
+                                      Default
+                                    </Badge>
+                                  )}
+                                  {price.type === 'subscription' && (
+                                    <Badge variant="outline" className="text-xs">
+                                      Subscription
+                                    </Badge>
+                                  )}
                                 </div>
-                                {price.type === 'subscription' && (
-                                  <Calendar className="h-4 w-4 text-gray-400" />
-                                )}
+                                <div className="flex items-center gap-2 text-sm">
+                                  <div className="flex items-center gap-1">
+                                    <DollarSign className="h-4 w-4 text-green-600" />
+                                    <span className="font-semibold text-green-600">{formatPrice(price)}</span>
+                                  </div>
+                                  {price.type === 'subscription' && (
+                                    <Calendar className="h-4 w-4 text-gray-400" />
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </Label>
-                        </div>
-                      ))}
-                  </div>
-                  
-                  {selectedPriceCount === 0 && (
-                    <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <p className="text-sm text-yellow-800">
-                        Please select at least one price option to continue.
-                      </p>
+                            </Label>
+                          </div>
+                        ))}
                     </div>
-                  )}
-                </div>
+                    {selectedPriceCount === 0 && (
+                      <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <p className="text-sm text-yellow-800">
+                          Please select at least one price option to continue.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
