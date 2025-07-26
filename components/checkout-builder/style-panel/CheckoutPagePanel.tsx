@@ -55,7 +55,6 @@ const CheckoutPagePanel = () => {
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
         Checkout Page Settings
       </h3>
-
       {/* Page Title */}
       <TextInput
         label="Page Title"

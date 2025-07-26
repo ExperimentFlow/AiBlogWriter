@@ -48,9 +48,58 @@ const CouponPanel: React.FC<CouponPanelProps> = ({ path }) => {
     });
   };
 
+  const handleTitleUpdate = (value: string) => {
+    setConfig({
+      ...config,
+      checkoutConfig: {
+        ...config.checkoutConfig,
+        couponField: {
+          ...config.checkoutConfig.couponField,
+          styling: {
+            ...couponStyling,
+            title: {
+              ...(couponStyling.title || {}),
+              text: value,
+            },
+          },
+        },
+      },
+    });
+  };
+
+  const handleTitleColorUpdate = (value: string) => {
+    setConfig({
+      ...config,
+      checkoutConfig: {
+        ...config.checkoutConfig,
+        couponField: {
+          ...config.checkoutConfig.couponField,
+          styling: {
+            ...couponStyling,
+            title: {
+              ...(couponStyling.title || {}),
+              color: value,
+            },
+          },
+        },
+      },
+    });
+  };
+
   return (
     <div className="p-4">
       <h3 className="text-lg font-semibold mb-4">Coupon Field Settings</h3>
+      <TextInput
+        label="Title"
+        value={couponStyling.title?.text || "Discount Code"}
+        onChange={handleTitleUpdate}
+        placeholder="Discount Code"
+      />
+      <ColorInput
+        label="Title Color"
+        value={couponStyling.title?.color || "#111"}
+        onChange={handleTitleColorUpdate}
+      />
       <ColorInput
         label="Full Field Background"
         value={couponStyling.backgroundColor || "#fff"}

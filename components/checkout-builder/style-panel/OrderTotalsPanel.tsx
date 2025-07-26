@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { ColorInput, TextInput, SliderInput } from "../utils/controlElements";
 import { useCheckoutBuilder } from "../contexts/CheckoutBuilderContext";
 import { getNestedValue, updateNestedObject } from "../utils/configUtils";
@@ -13,15 +14,44 @@ const OrderTotalsPanel: React.FC<OrderTotalsPanelProps> = ({ path }) => {
 
   if (!selectedElement) return null;
 
+  // Section-level default styling
+  const DEFAULTS = {
+    backgroundColor: "#fff",
+    color: "#111",
+    padding: "16px",
+    margin: "0px",
+    borderRadius: "8px",
+    gap: "12px",
+    fontSize: "16px",
+    border: "1px solid #e5e7eb",
+  };
+
   // Get current styling and values for the order totals
   const currentStyling = getNestedValue(config, path + ".styling") || {};
   const currentTotals = getNestedValue(config, path + ".totals") || {
-    subtotal: { label: "Subtotal", value: "$0.00", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
-    shipping: { label: "Shipping", value: "$5.99", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
-    tax: { label: "Tax", value: "$0.00", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
-    pricingModel: { label: "Pricing Model", value: "One-Time Payment", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
-    total: { label: "Total", value: "$5.99", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
+    subtotal: { label: "Subtotal", value: "$0.00" },
+    shipping: { label: "Shipping", value: "$5.99" },
+    tax: { label: "Tax", value: "$0.00" },
+    pricingModel: { label: "Pricing Model", value: "One-Time Payment" },
+    total: { label: "Total", value: "$5.99" },
   };
+
+  // Set initial section styling values in config if missing
+  useEffect(() => {
+    const updates: any = {};
+    if (typeof currentStyling.backgroundColor !== "string") updates.backgroundColor = DEFAULTS.backgroundColor;
+    if (typeof currentStyling.color !== "string") updates.color = DEFAULTS.color;
+    if (typeof currentStyling.padding !== "string") updates.padding = DEFAULTS.padding;
+    if (typeof currentStyling.margin !== "string") updates.margin = DEFAULTS.margin;
+    if (typeof currentStyling.borderRadius !== "string") updates.borderRadius = DEFAULTS.borderRadius;
+    if (typeof currentStyling.gap !== "string") updates.gap = DEFAULTS.gap;
+    if (typeof currentStyling.fontSize !== "string") updates.fontSize = DEFAULTS.fontSize;
+    if (typeof currentStyling.border !== "string") updates.border = DEFAULTS.border;
+    if (Object.keys(updates).length > 0) {
+      setConfig(updateNestedObject(config, path + ".styling", { ...currentStyling, ...updates }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleTotalsUpdate = (key: string, updates: Partial<typeof currentTotals["subtotal"]>) => {
     const updatedTotals = {
@@ -59,63 +89,51 @@ const OrderTotalsPanel: React.FC<OrderTotalsPanelProps> = ({ path }) => {
         value={currentStyling.color}
         onChange={(value) => handleStylingUpdate({ color: value })}
       />
-
-      {/* Padding */}
       <SliderInput
         label="Padding"
-        value={currentStyling.padding || "16px"}
+        value={currentStyling.padding}
         min={0}
         max={50}
         step={4}
         unit="px"
         onChange={(value) => handleStylingUpdate({ padding: value })}
       />
-
-      {/* Margin */}
       <SliderInput
         label="Margin"
-        value={currentStyling.margin || "0px"}
+        value={currentStyling.margin}
         min={0}
         max={50}
         step={4}
         unit="px"
         onChange={(value) => handleStylingUpdate({ margin: value })}
       />
-
-      {/* Border Radius */}
       <SliderInput
         label="Border Radius"
-        value={currentStyling.borderRadius || "8px"}
+        value={currentStyling.borderRadius}
         min={0}
         max={20}
         step={2}
         unit="px"
         onChange={(value) => handleStylingUpdate({ borderRadius: value })}
       />
-
-      {/* Gap Between Elements */}
       <SliderInput
         label="Gap Between Elements"
-        value={currentStyling.gap || "12px"}
+        value={currentStyling.gap}
         min={0}
         max={30}
         step={2}
         unit="px"
         onChange={(value) => handleStylingUpdate({ gap: value })}
       />
-
-      {/* Font Size */}
       <SliderInput
         label="Font Size"
-        value={currentStyling.fontSize || "16px"}
+        value={currentStyling.fontSize}
         min={12}
         max={24}
         step={1}
         unit="px"
         onChange={(value) => handleStylingUpdate({ fontSize: value })}
       />
-
-      {/* Border */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Border
@@ -123,9 +141,9 @@ const OrderTotalsPanel: React.FC<OrderTotalsPanelProps> = ({ path }) => {
         <div className="grid grid-cols-2 gap-2">
           <input
             type="text"
-            value={currentStyling.border || "1px solid #e5e7eb"}
+            value={currentStyling.border}
             onChange={(e) => handleStylingUpdate({ border: e.target.value })}
-            placeholder="1px solid #e5e7eb"
+            placeholder={DEFAULTS.border}
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
           />
         </div>
@@ -156,27 +174,6 @@ const OrderTotalsPanel: React.FC<OrderTotalsPanelProps> = ({ path }) => {
               value={item.value}
               onChange={(val) => handleTotalsUpdate(key, { value: val })}
               placeholder="Value"
-            />
-          </div>
-          <div className="mb-2">
-            <ColorInput
-              label="Text Color"
-              value={item.textColor}
-              onChange={(val) => handleTotalsUpdate(key, { textColor: val })}
-            />
-          </div>
-          <div className="mb-2">
-            <ColorInput
-              label="Background Color"
-              value={item.bgColor}
-              onChange={(val) => handleTotalsUpdate(key, { bgColor: val })}
-            />
-          </div>
-          <div className="mb-2">
-            <ColorInput
-              label="Primary Color"
-              value={item.primaryColor}
-              onChange={(val) => handleTotalsUpdate(key, { primaryColor: val })}
             />
           </div>
         </div>
