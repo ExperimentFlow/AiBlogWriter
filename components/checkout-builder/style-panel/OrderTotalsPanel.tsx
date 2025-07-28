@@ -13,15 +13,31 @@ const OrderTotalsPanel: React.FC<OrderTotalsPanelProps> = ({ path }) => {
 
   if (!selectedElement) return null;
 
-  // Get current styling and values for the order totals
-  const currentStyling = getNestedValue(config, path + ".styling") || {};
-  const currentTotals = getNestedValue(config, path + ".totals") || {
+  // Get current styling and values for the order totals, with robust defaults
+  // Dynamic defaults: use config value if present, else fallback to default
+  const defaultStyling = {
+    backgroundColor: "#fff",
+    color: "#111",
+    padding: "16px",
+    margin: "0px",
+    borderRadius: "8px",
+    gap: "12px",
+    fontSize: "16px",
+    border: "1px solid #e5e7eb",
+  };
+  const defaultTotals = {
     subtotal: { label: "Subtotal", value: "$0.00", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
     shipping: { label: "Shipping", value: "$5.99", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
     tax: { label: "Tax", value: "$0.00", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
     pricingModel: { label: "Pricing Model", value: "One-Time Payment", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
     total: { label: "Total", value: "$5.99", textColor: "#111", bgColor: "#fff", primaryColor: "#2563eb" },
   };
+
+  // Use config value if present, else fallback to default
+  const configStylingRaw = getNestedValue(config, path + ".styling") || {};
+  const configTotalsRaw = getNestedValue(config, path + ".totals") || {};
+  const currentStyling = { ...defaultStyling, ...configStylingRaw };
+  const currentTotals = { ...defaultTotals, ...configTotalsRaw };
 
   const handleTotalsUpdate = (key: string, updates: Partial<typeof currentTotals["subtotal"]>) => {
     const updatedTotals = {
@@ -36,8 +52,9 @@ const OrderTotalsPanel: React.FC<OrderTotalsPanelProps> = ({ path }) => {
   };
 
   const handleStylingUpdate = (updates: Partial<typeof currentStyling>) => {
+    // Only update the raw config values, not the merged defaults
     const updatedStyling = {
-      ...currentStyling,
+      ...configStylingRaw,
       ...updates,
     };
     const updatedConfig = updateNestedObject(config, path + ".styling", updatedStyling);
@@ -133,54 +150,6 @@ const OrderTotalsPanel: React.FC<OrderTotalsPanelProps> = ({ path }) => {
           Format: width style color (e.g., "1px solid #e5e7eb")
         </p>
       </div>
-
-      {(Object.entries(currentTotals) as [string, {
-        label: string;
-        value: string;
-        textColor: string;
-        bgColor: string;
-        primaryColor: string;
-      }][]).map(([key, item]) => (
-        <div key={key} className="mb-6 p-3 rounded border border-gray-200 bg-gray-50">
-          <div className="mb-2">
-            <TextInput
-              label="Label"
-              value={item.label}
-              onChange={(val) => handleTotalsUpdate(key, { label: val })}
-              placeholder="Label"
-            />
-          </div>
-          <div className="mb-2">
-            <TextInput
-              label="Value"
-              value={item.value}
-              onChange={(val) => handleTotalsUpdate(key, { value: val })}
-              placeholder="Value"
-            />
-          </div>
-          <div className="mb-2">
-            <ColorInput
-              label="Text Color"
-              value={item.textColor}
-              onChange={(val) => handleTotalsUpdate(key, { textColor: val })}
-            />
-          </div>
-          <div className="mb-2">
-            <ColorInput
-              label="Background Color"
-              value={item.bgColor}
-              onChange={(val) => handleTotalsUpdate(key, { bgColor: val })}
-            />
-          </div>
-          <div className="mb-2">
-            <ColorInput
-              label="Primary Color"
-              value={item.primaryColor}
-              onChange={(val) => handleTotalsUpdate(key, { primaryColor: val })}
-            />
-          </div>
-        </div>
-      ))}
     </div>
   );
 };

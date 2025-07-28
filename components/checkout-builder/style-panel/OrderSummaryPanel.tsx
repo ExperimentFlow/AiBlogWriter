@@ -1,7 +1,7 @@
+import React from "react";
 import { ColorInput, TextInput, SliderInput } from "../utils/controlElements";
 import { useCheckoutBuilder } from "../contexts/CheckoutBuilderContext";
 import { getNestedValue, updateNestedObject } from "../utils/configUtils";
-import { useElementSelection } from "../contexts/ElementSelectionContext";
 
 interface OrderSummaryPanelProps {
   path: string;
@@ -9,111 +9,120 @@ interface OrderSummaryPanelProps {
 
 const OrderSummaryPanel: React.FC<OrderSummaryPanelProps> = ({ path }) => {
   const { config, setConfig } = useCheckoutBuilder();
-  const { selectedElement } = useElementSelection();
+  const sectionData = getNestedValue(config, path) || {};
+  const styling = sectionData.styling || {};
 
-  if (!selectedElement) return null;
-
-  // Get current styling for the order summary
-  const configStyling = getNestedValue(config, path + ".styling") || {};
-  const currentSection = getNestedValue(config, path.replace(".styling", "")) || {};
-
-  const handleStylingUpdate = (updates: any) => {
-    const updatedConfig = updateNestedObject(
-      config,
-      path + ".styling",
-      { ...configStyling, ...updates }
-    );
+  const handleStylingUpdate = (updates: Record<string, string | number>) => {
+    const updatedConfig = updateNestedObject(config, `${path}.styling`, {
+      ...styling,
+      ...updates,
+    });
     setConfig(updatedConfig);
   };
 
+  // Dedicated handler for updating the section's title
   const handleTitleUpdate = (value: string) => {
-    const updatedConfig = updateNestedObject(config, path + ".title", value);
+    const updatedConfig = updateNestedObject(config, `${path}.title`, value);
     setConfig(updatedConfig);
   };
 
   return (
     <div className="p-4">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Section Settings</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        Order Summary Settings
+      </h3>
 
       {/* Section Title */}
       <TextInput
         label="Section Title"
-        value={currentSection.title || ""}
+        value={sectionData.title || "Order Summary"}
         onChange={handleTitleUpdate}
         placeholder="Enter section title"
       />
 
-      {/* Section Background Color */}
+      {/* Background and Text Colors */}
       <ColorInput
         label="Section Background Color"
-        value={configStyling.backgroundColor || "#fff"}
+        value={styling.backgroundColor || "#ffffff"}
         onChange={(value) => handleStylingUpdate({ backgroundColor: value })}
       />
       <ColorInput
-        label="Title Color"
-        value={configStyling.color || "#111"}
+        label="Text Color"
+        value={styling.color || "#111111"}
         onChange={(value) => handleStylingUpdate({ color: value })}
       />
+
+      {/* Layout Controls */}
       <SliderInput
         label="Padding"
-        value={typeof configStyling.padding === "number" ? `${configStyling.padding}px` : configStyling.padding || "16px"}
+        value={`${styling.padding || 16}px`}
         min={0}
         max={50}
         step={4}
         unit="px"
-        onChange={(value) => handleStylingUpdate({ padding: parseInt(value.replace("px", "")) })}
+        onChange={(value) =>
+          handleStylingUpdate({ padding: parseInt(value, 10) })
+        }
       />
       <SliderInput
         label="Margin"
-        value={typeof configStyling.margin === "number" ? `${configStyling.margin}px` : configStyling.margin || "0px"}
+        value={`${styling.margin || 0}px`}
         min={0}
         max={50}
         step={4}
         unit="px"
-        onChange={(value) => handleStylingUpdate({ margin: parseInt(value.replace("px", "")) })}
+        onChange={(value) =>
+          handleStylingUpdate({ margin: parseInt(value, 10) })
+        }
       />
       <SliderInput
         label="Border Radius"
-        value={typeof configStyling.borderRadius === "number" ? `${configStyling.borderRadius}px` : configStyling.borderRadius || "8px"}
+        value={`${styling.borderRadius || 8}px`}
         min={0}
         max={20}
         step={2}
         unit="px"
-        onChange={(value) => handleStylingUpdate({ borderRadius: parseInt(value.replace("px", "")) })}
+        onChange={(value) =>
+          handleStylingUpdate({ borderRadius: parseInt(value, 10) })
+        }
       />
       <SliderInput
         label="Gap Between Elements"
-        value={typeof configStyling.gap === "number" ? `${configStyling.gap}px` : configStyling.gap || "12px"}
+        value={`${styling.gap || 12}px`}
         min={0}
         max={30}
         step={2}
         unit="px"
-        onChange={(value) => handleStylingUpdate({ gap: parseInt(value.replace("px", "")) })}
+        onChange={(value) =>
+          handleStylingUpdate({ gap: parseInt(value, 10) })
+        }
       />
+
+      {/* Typography */}
       <SliderInput
         label="Font Size"
-        value={typeof configStyling.fontSize === "number" ? `${configStyling.fontSize}px` : configStyling.fontSize || "16px"}
+        value={`${styling.fontSize || 16}px`}
         min={12}
         max={24}
         step={1}
         unit="px"
-        onChange={(value) => handleStylingUpdate({ fontSize: parseInt(value.replace("px", "")) })}
+        onChange={(value) =>
+          handleStylingUpdate({ fontSize: parseInt(value, 10) })
+        }
       />
+
+      {/* Border Input */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Border
         </label>
-        <div className="grid grid-cols-2 gap-2">
-          <input
-            type="text"
-            value={configStyling.border || "1px solid #e5e7eb"}
-            onChange={(e) => handleStylingUpdate({ border: e.target.value })}
-            placeholder="1px solid #e5e7eb"
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-          />
-        </div>
+        <TextInput
+          value={styling.border || "1px solid #e5e7eb"}
+          onChange={(value) => handleStylingUpdate({ border: value })}
+          placeholder="1px solid #e5e7eb"
+        />
         <p className="text-xs text-gray-500 mt-1">
-          Format: width style color (e.g., "1px solid #e5e7eb")
+          Format: width style color
         </p>
       </div>
     </div>
