@@ -27,17 +27,17 @@ export const CheckoutFlowToolbar: React.FC<CheckoutFlowToolbarProps> = ({
               placeholder="Enter flow name..."
             />
           </div>
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
               Active
             </span>
             <span className="text-sm text-gray-500">•</span>
             <span className="text-sm text-gray-500">Last saved 2 minutes ago</span>
-          </div>
+          </div> */}
         </div>
         
         <div className="flex items-center space-x-3">
-          <button className="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md">
+          {/* <button className="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md">
             <Download className="w-4 h-4 mr-2" />
             Export
           </button>
@@ -45,12 +45,9 @@ export const CheckoutFlowToolbar: React.FC<CheckoutFlowToolbarProps> = ({
           <button className="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md">
             <Upload className="w-4 h-4 mr-2" />
             Import
-          </button>
+          </button> */}
           
-          <button className="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md">
-            <Play className="w-4 h-4 mr-2" />
-            Test Flow
-          </button>
+         
           
           <button
             onClick={onSave}

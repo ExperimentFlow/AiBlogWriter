@@ -1,6 +1,6 @@
 import React from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
-import { Globe, Zap } from 'lucide-react';
+import { Globe, Zap, Plus } from 'lucide-react';
 
 export const WebhookNode: React.FC<NodeProps> = ({ data, selected }) => {
   const getMethodColor = (method: string) => {
@@ -36,8 +36,25 @@ export const WebhookNode: React.FC<NodeProps> = ({ data, selected }) => {
         </div>
       </div>
       
-      <Handle type="target" position={Position.Top} className="w-3 h-3" />
-      <Handle type="source" position={Position.Bottom} className="w-3 h-3" />
+      <Handle type="target" position={Position.Top} className="w-4 h-4 bg-blue-500 hover:bg-blue-600 transition-colors" />
+      <Handle type="source" position={Position.Bottom} className="w-4 h-4 bg-green-500 hover:bg-green-600 transition-colors" />
+      
+      {/* Quick Connect Button */}
+      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2">
+        <button
+          className="w-8 h-8 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110"
+          title="Add next action"
+          onClick={(e) => {
+            e.stopPropagation();
+            // This will be handled by the parent component
+            if (data.onQuickConnect) {
+              data.onQuickConnect();
+            }
+          }}
+        >
+          <Plus className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 }; 
