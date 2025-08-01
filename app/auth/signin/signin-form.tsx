@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/form-field';
 import { signInSchema, type SignInFormData } from '@/lib/validations/auth';
+import Link from 'next/link';
 
 export function SignInForm() {
   const [error, setError] = useState('');
@@ -75,6 +76,15 @@ export function SignInForm() {
         error={errors.password?.message}
         {...register('password')}
       />
+      
+      <div className="text-right">
+        <Link
+          href="/auth/forgot-password"
+          className="text-sm text-blue-600 hover:text-blue-500"
+        >
+          Forgot your password?
+        </Link>
+      </div>
       
       <Button type="submit" className="w-full" disabled={loading}>
         {loading ? 'Signing in...' : 'Sign in'}
